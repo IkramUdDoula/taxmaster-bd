@@ -54,7 +54,7 @@ export function TaxCalculatorForm() {
         }
       } else {
         // If salary is not valid, prompt or set to 0
-        setInvestmentAmount("0"); 
+        setInvestmentAmount("0");
       }
     } else {
       setInvestmentAmount(""); // Clear investment amount if switch is off
@@ -111,9 +111,9 @@ export function TaxCalculatorForm() {
     <div className="container mx-auto p-4 md:p-8 max-w-4xl">
       <Card className="shadow-2xl">
         <CardHeader className="text-center bg-primary text-primary-foreground rounded-t-lg py-6 md:py-8">
-          <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-headline">TaxEase BD</CardTitle>
+          <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-headline">Taxmaster</CardTitle>
           <CardDescription className="text-primary-foreground/80 text-base md:text-lg">
-            Bangladesh Income Tax Calculator
+            Calculate your taxes, before negotiating your salary
           </CardDescription>
         </CardHeader>
         <CardContent className="p-4 md:p-8 space-y-6">
