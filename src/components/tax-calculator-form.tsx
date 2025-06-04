@@ -136,13 +136,12 @@ export function TaxCalculatorForm() {
                   <SelectValue placeholder="Select income year" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="2023-2024">2023-2024</SelectItem>
                   <SelectItem value="2024-2025">2024-2025</SelectItem>
                   <SelectItem value="2025-2026">2025-2026</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground pt-1">
-                 Note: Tax calculations use rules specific to the selected income year. For 2023-2024 & 2024-2025, the rules for 2024-2025 are applied.
+                 Note: Tax calculations use rules specific to the selected income year. For 2024-2025, the rules for 2024-2025 are applied.
               </p>
             </div>
 
