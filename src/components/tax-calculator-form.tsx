@@ -19,7 +19,7 @@ export function TaxCalculatorForm() {
   const [bonuses, setBonuses] = useState("");
   const [includeInvestments, setIncludeInvestments] = useState(false);
   const [investmentAmount, setInvestmentAmount] = useState("");
-  const [incomeYear, setIncomeYear] = useState("2025-2026"); // Default to 2025-2026
+  const [incomeYear, setIncomeYear] = useState("2025-2026");
   const [taxResults, setTaxResults] = useState<TaxCalculationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -73,13 +73,13 @@ export function TaxCalculatorForm() {
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-3xl">
       <Card className="shadow-2xl">
-        <CardHeader className="text-center bg-primary text-primary-foreground rounded-t-lg py-8">
-          <CardTitle className="text-3xl md:text-4xl font-headline">TaxEase BD</CardTitle>
-          <CardDescription className="text-primary-foreground/80 text-lg">
+        <CardHeader className="text-center bg-primary text-primary-foreground rounded-t-lg py-6 md:py-8">
+          <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-headline">TaxEase BD</CardTitle>
+          <CardDescription className="text-primary-foreground/80 text-base md:text-lg">
             Bangladesh Income Tax Calculator
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6 md:p-8 space-y-6">
+        <CardContent className="p-4 md:p-8 space-y-6">
           {error && (
             <Alert variant="destructive" className="mb-6">
               <AlertCircle className="h-4 w-4" />
@@ -104,7 +104,7 @@ export function TaxCalculatorForm() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground pt-1">
-                Note: Tax calculations use rules specific to 2024-2025 or 2025-2026. Other selections will use 2024-2025 rules as a fallback.
+                Note: Tax calculations use rules specific to the selected income year (2024-2025 or 2025-2026). Other selections will use 2024-2025 rules as a fallback.
               </p>
             </div>
 
@@ -166,7 +166,7 @@ export function TaxCalculatorForm() {
                 />
               </div>
             )}
-             <Button type="submit" className="w-full text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground">
+             <Button type="submit" className="w-full text-base py-4 md:text-lg md:py-6 bg-accent hover:bg-accent/90 text-accent-foreground">
               <Calculator className="mr-2 h-5 w-5" />
               Calculate Tax
             </Button>

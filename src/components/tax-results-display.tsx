@@ -17,15 +17,15 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
   return (
     <div className="space-y-6 mt-8">
       <Card className="shadow-lg">
-        <CardHeader className="bg-primary/10">
-          <CardTitle className="flex items-center text-primary font-headline">
+        <CardHeader className="bg-primary/10 p-4 md:p-6">
+          <CardTitle className="flex items-center text-primary font-headline text-xl md:text-2xl">
             <ClipboardList className="mr-2 h-6 w-6 text-primary" />
             Tax Calculation Summary
           </CardTitle>
           <CardDescription>For Income Year: {results.incomeYear}</CardDescription>
         </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <CardContent className="p-4 md:p-6 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <p><strong>Total Annual Gross Income:</strong> {formatCurrency(results.totalAnnualIncome)}</p>
             <p><strong>Standard Exemption Applied:</strong> <span className="text-green-700 dark:text-green-500">-{formatCurrency(results.standardExemptionApplied)}</span></p>
             <p><strong>Taxable Income:</strong> {formatCurrency(results.taxableIncome)}</p>
@@ -43,14 +43,14 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="shadow-lg">
-          <CardHeader className="bg-green-600/10 dark:bg-green-400/10">
-            <CardTitle className="flex items-center text-green-700 dark:text-green-400 font-headline">
+          <CardHeader className="bg-green-600/10 dark:bg-green-400/10 p-4 md:p-6">
+            <CardTitle className="flex items-center text-green-700 dark:text-green-400 font-headline text-lg md:text-xl">
               <Briefcase className="mr-2 h-6 w-6" />
               Income Overview
             </CardTitle>
             <CardDescription>Income Year: {results.incomeYear}</CardDescription>
           </CardHeader>
-          <CardContent className="p-6 space-y-4 text-sm">
+          <CardContent className="p-4 md:p-6 space-y-4 text-sm">
               <div className="flex items-center justify-between">
                   <div className="flex items-center">
                       <ArrowUpCircle className="mr-2 h-5 w-5 text-foreground/80" />
@@ -78,24 +78,24 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
         </Card>
 
         <Card className="shadow-lg">
-          <CardHeader className="bg-accent/10">
-            <CardTitle className="flex items-center text-accent-foreground font-headline">
+          <CardHeader className="bg-accent/10 p-4 md:p-6">
+            <CardTitle className="flex items-center text-accent-foreground font-headline text-lg md:text-xl">
               <Landmark className="mr-2 h-6 w-6 text-accent" />
               Final Tax &amp; Monthly Deduction
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6 text-center space-y-2">
-              <p className="text-lg">
+          <CardContent className="p-4 md:p-6 text-center space-y-2">
+              <p className="text-base md:text-lg">
                   <strong>Total Yearly Tax Due:</strong>
               </p>
-              <p className="text-3xl font-bold text-primary">
+              <p className="text-2xl md:text-3xl font-bold text-primary">
                   {formatCurrency(results.finalTaxDue)}
               </p>
               <Separator className="my-4"/>
-              <p className="text-md">
+              <p className="text-sm md:text-md">
                   <strong>Suggested Monthly Tax Deduction (from Gross Salary):</strong>
               </p>
-              <p className="text-2xl font-semibold text-accent">
+              <p className="text-xl md:text-2xl font-semibold text-accent">
                   {formatCurrency(results.monthlyTaxDeduction)}
               </p>
           </CardContent>
@@ -104,45 +104,47 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
       
       {results.taxableIncome > 0 && results.allowableInvestmentLimit > 0 && (
         <Card className="shadow-lg">
-          <CardHeader className="bg-teal-600/10 dark:bg-teal-400/10">
-            <CardTitle className="flex items-center text-teal-700 dark:text-teal-300 font-headline">
+          <CardHeader className="bg-teal-600/10 dark:bg-teal-400/10 p-4 md:p-6">
+            <CardTitle className="flex items-center text-teal-700 dark:text-teal-300 font-headline text-lg md:text-xl">
               <Lightbulb className="mr-2 h-6 w-6" />
               Investment Rebate Tip
             </CardTitle>
             <CardDescription>Maximize your savings for Income Year: {results.incomeYear}</CardDescription>
           </CardHeader>
-          <CardContent className="p-6 space-y-4 text-sm text-teal-700 dark:text-teal-300">
+          <CardContent className="p-4 md:p-6 space-y-4 text-sm text-teal-700 dark:text-teal-300">
             <p className="mb-3">
               To maximize your potential tax rebate for income year {results.incomeYear},
               you can make eligible investments up to <strong>{formatCurrency(results.allowableInvestmentLimit)}</strong>.
               Below are some common investment avenues and their specific considerations:
             </p>
-            <Table className="mb-3 text-sm">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-teal-700 dark:text-teal-400 font-medium">Investment Avenue</TableHead>
-                  <TableHead className="text-teal-700 dark:text-teal-400 font-medium">Tax Rebate Considerations</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>Shares of companies listed on the stock exchange in Bangladesh</TableCell>
-                  <TableCell>No upper limit for tax rebate.</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Investment in mutual funds/unit funds or debentures</TableCell>
-                  <TableCell>Maximum limit for tax rebate – {formatCurrency(500000)}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Investment in Deposit Pension Scheme (DPS) of any scheduled bank or financial institution</TableCell>
-                  <TableCell>Maximum limit for tax rebate – {formatCurrency(120000)}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Investment in government securities (such as savings certificates, T-bonds/bills, etc.)</TableCell>
-                  <TableCell>Maximum limit for tax rebate – {formatCurrency(500000)}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <Table className="mb-3 text-sm min-w-[600px] md:min-w-full">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-teal-700 dark:text-teal-400 font-medium">Investment Avenue</TableHead>
+                    <TableHead className="text-teal-700 dark:text-teal-400 font-medium">Tax Rebate Considerations</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>Shares of companies listed on the stock exchange in Bangladesh</TableCell>
+                    <TableCell>No upper limit for tax rebate.</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Investment in mutual funds/unit funds or debentures</TableCell>
+                    <TableCell>Maximum limit for tax rebate – {formatCurrency(500000)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Investment in Deposit Pension Scheme (DPS) of any scheduled bank or financial institution</TableCell>
+                    <TableCell>Maximum limit for tax rebate – {formatCurrency(120000)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Investment in government securities (such as savings certificates, T-bonds/bills, etc.)</TableCell>
+                    <TableCell>Maximum limit for tax rebate – {formatCurrency(500000)}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
             <p>
               The term 'No upper limit for tax rebate' for certain investments means there's no specific cap for that category's contribution to your total eligible investment amount. The overall eligible investment is still capped at {formatCurrency(results.allowableInvestmentLimit)}. The tax rebate is then 15% of this total actual eligible investment (considering various specific limits and actual investments), but cannot exceed your gross tax liability. These are general guidelines; always consult with a tax professional for personalized advice.
             </p>
@@ -155,8 +157,8 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
           <AccordionItem value="tax-slab-breakdown" className="border-none">
             <Card className="shadow-lg">
               <AccordionTrigger className="w-full hover:no-underline">
-                <CardHeader className="bg-secondary/20 w-full p-6 text-left">
-                  <CardTitle className="flex items-center text-secondary-foreground font-headline">
+                <CardHeader className="bg-secondary/20 w-full p-4 md:p-6 text-left">
+                  <CardTitle className="flex items-center text-secondary-foreground font-headline text-lg md:text-xl">
                     <TrendingDown className="mr-2 h-6 w-6 text-secondary-foreground" />
                     Tax Slab Breakdown (Click to Expand)
                   </CardTitle>
@@ -164,30 +166,32 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
               </AccordionTrigger>
               <AccordionContent>
                 <CardContent className="p-0">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Slab Description</TableHead>
-                        <TableHead className="text-right">Taxable Amount</TableHead>
-                        <TableHead className="text-right">Tax Rate</TableHead>
-                        <TableHead className="text-right">Tax on Slab</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {results.taxSlabBreakdown.map((slab, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{slab.slabDescription}</TableCell>
-                          <TableCell className="text-right">{formatCurrency(slab.taxableAmountInSlab)}</TableCell>
-                          <TableCell className="text-right">{slab.taxRate.toFixed(2)}%</TableCell>
-                          <TableCell className="text-right">{formatCurrency(slab.taxOnSlab)}</TableCell>
+                  <div className="overflow-x-auto">
+                    <Table className="min-w-[600px] md:min-w-full">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Slab Description</TableHead>
+                          <TableHead className="text-right">Taxable Amount</TableHead>
+                          <TableHead className="text-right">Tax Rate</TableHead>
+                          <TableHead className="text-right">Tax on Slab</TableHead>
                         </TableRow>
-                      ))}
-                      <TableRow className="font-bold bg-muted/50">
-                        <TableCell colSpan={3} className="text-right">Total Gross Tax</TableCell>
-                        <TableCell className="text-right">{formatCurrency(results.grossTax)}</TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {results.taxSlabBreakdown.map((slab, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{slab.slabDescription}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(slab.taxableAmountInSlab)}</TableCell>
+                            <TableCell className="text-right">{slab.taxRate.toFixed(2)}%</TableCell>
+                            <TableCell className="text-right">{formatCurrency(slab.taxOnSlab)}</TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow className="font-bold bg-muted/50">
+                          <TableCell colSpan={3} className="text-right">Total Gross Tax</TableCell>
+                          <TableCell className="text-right">{formatCurrency(results.grossTax)}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
                 </CardContent>
               </AccordionContent>
             </Card>
@@ -196,12 +200,12 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
       )}
 
       <Card className="shadow-lg bg-blue-500/10 dark:bg-blue-400/10">
-         <CardHeader>
-            <CardTitle className="flex items-center text-blue-700 dark:text-blue-300 font-headline text-lg">
+         <CardHeader className="p-4 md:p-6">
+            <CardTitle className="flex items-center text-blue-700 dark:text-blue-300 font-headline text-base md:text-lg">
                 <Info className="mr-2 h-5 w-5"/> Important Note
             </CardTitle>
          </CardHeader>
-         <CardContent className="text-sm text-blue-700 dark:text-blue-300">
+         <CardContent className="text-sm text-blue-700 dark:text-blue-300 p-4 md:p-6 pt-0 md:pt-0">
             <p>The tax calculations provided are based on the rules applicable for the <strong>Income Year {results.incomeYear}</strong> (Assessment Year typically {parseInt(results.incomeYear.split('-')[0])+1}-{parseInt(results.incomeYear.split('-')[1])+1}). Tax laws can change, so always consult a professional for precise financial planning.</p>
          </CardContent>
       </Card>
