@@ -74,6 +74,22 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                 </div>
                 <strong className="text-md text-green-700 dark:text-green-500">{formatCurrency(results.netMonthlyIncome)}</strong>
             </div>
+
+            {results.taxableIncome > 0 && results.allowableInvestmentLimit > 0 && results.grossTax > 0 && (
+              <>
+                <Separator />
+                <div className="pt-4">
+                  <h4 className="flex items-center font-semibold text-md mb-2 text-teal-700 dark:text-teal-300">
+                    <Lightbulb className="mr-2 h-5 w-5"/> Investment Rebate Tip
+                  </h4>
+                  <p className="text-sm text-teal-700 dark:text-teal-300">
+                    To maximize your potential tax rebate for income year {results.incomeYear},
+                    you can make eligible investments up to <strong>{formatCurrency(results.allowableInvestmentLimit)}</strong>.
+                    The tax rebate is 15% of your actual eligible investment, but cannot exceed your gross tax liability.
+                  </p>
+                </div>
+              </>
+            )}
         </CardContent>
       </Card>
 
@@ -101,23 +117,6 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
         </CardContent>
       </Card>
       
-      {results.taxableIncome > 0 && results.allowableInvestmentLimit > 0 && results.grossTax > 0 && (
-        <Card className="shadow-lg bg-teal-500/10 dark:bg-teal-400/10">
-           <CardHeader>
-              <CardTitle className="flex items-center text-teal-700 dark:text-teal-300 font-headline text-lg">
-                  <Lightbulb className="mr-2 h-5 w-5"/> Investment Rebate Tip
-              </CardTitle>
-           </CardHeader>
-           <CardContent className="text-sm text-teal-700 dark:text-teal-300">
-              <p>
-                To maximize your potential tax rebate for income year {results.incomeYear},
-                you can make eligible investments up to <strong>{formatCurrency(results.allowableInvestmentLimit)}</strong>.
-                The tax rebate is 15% of your actual eligible investment, but cannot exceed your gross tax liability.
-              </p>
-           </CardContent>
-        </Card>
-      )}
-
      {results.taxableIncome > 0 && results.grossTax > 0 && (
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="tax-slab-breakdown" className="border-none">
@@ -176,4 +175,3 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
     </div>
   );
 }
-
