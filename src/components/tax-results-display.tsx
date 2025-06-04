@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ClipboardList, Landmark, TrendingDown, Briefcase, ArrowUpCircle, ArrowDownCircle, Info, Lightbulb } from "lucide-react";
+import { ClipboardList, Landmark, TrendingDown, Briefcase, ArrowUpCircle, ArrowDownCircle, Info, Lightbulb, Wallet } from "lucide-react";
 
 interface TaxResultsDisplayProps {
   results: TaxCalculationResult;
@@ -32,7 +32,7 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
             <p><strong>Gross Tax Liability:</strong> {formatCurrency(results.grossTax)}</p>
             {results.investmentAmountConsidered > 0 && results.taxableIncome > 0 && (
               <>
-                <p><strong>Investment Amount Considered:</strong> {formatCurrency(results.investmentAmountConsidered)}</p>
+                <p><strong>Investment Amount Considered (User Input):</strong> {formatCurrency(results.investmentAmountConsidered)}</p>
                 <p><strong>Tax Rebate:</strong> <span className="text-green-700 dark:text-green-500">-{formatCurrency(results.taxRebate)}</span></p>
               </>
             )}
@@ -74,11 +74,39 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                   <h4 className="flex items-center font-semibold text-md mb-2 text-teal-700 dark:text-teal-300">
                     <Lightbulb className="mr-2 h-5 w-5"/> Investment Rebate Tip
                   </h4>
-                  <p className="text-sm text-teal-700 dark:text-teal-300">
+                  <p className="text-sm text-teal-700 dark:text-teal-300 mb-3">
                     To maximize your potential tax rebate for income year {results.incomeYear},
                     you can make eligible investments up to <strong>{formatCurrency(results.allowableInvestmentLimit)}</strong>.
-                    Common eligible investment avenues in Bangladesh include Life Insurance Premiums, contributions to Provident Fund (PF), approved Superannuation Funds, National Savings Certificates (Sanchayapatra), investments in the stock market (subject to conditions), DPS, and donations to specified charitable organizations.
-                    The tax rebate is 15% of your actual eligible investment, but cannot exceed your gross tax liability.
+                    Below are some common investment avenues and their specific considerations:
+                  </p>
+                  <Table className="mb-3 text-sm text-teal-700 dark:text-teal-300">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-teal-700 dark:text-teal-400 font-medium">Investment Avenue</TableHead>
+                        <TableHead className="text-teal-700 dark:text-teal-400 font-medium">Tax Rebate Considerations</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="text-teal-700 dark:text-teal-300">Shares of companies listed on the stock exchange in Bangladesh</TableCell>
+                        <TableCell className="text-teal-700 dark:text-teal-300">No upper limit for tax rebate.</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="text-teal-700 dark:text-teal-300">Investment in mutual funds/unit funds or debentures</TableCell>
+                        <TableCell className="text-teal-700 dark:text-teal-300">Maximum limit for tax rebate – {formatCurrency(500000)}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="text-teal-700 dark:text-teal-300">Investment in Deposit Pension Scheme (DPS) of any scheduled bank or financial institution</TableCell>
+                        <TableCell className="text-teal-700 dark:text-teal-300">Maximum limit for tax rebate – {formatCurrency(120000)}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="text-teal-700 dark:text-teal-300">Investment in government securities (such as savings certificates, T-bonds/bills, etc.)</TableCell>
+                        <TableCell className="text-teal-700 dark:text-teal-300">Maximum limit for tax rebate – {formatCurrency(500000)}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                  <p className="text-sm text-teal-700 dark:text-teal-300">
+                    The term 'No upper limit for tax rebate' for certain investments means there's no specific cap for that category's contribution to your total eligible investment amount. The overall eligible investment is still capped at {formatCurrency(results.allowableInvestmentLimit)}. The tax rebate is then 15% of this total actual eligible investment (considering various specific limits and actual investments), but cannot exceed your gross tax liability. These are general guidelines; always consult with a tax professional for personalized advice.
                   </p>
                 </div>
               </>
@@ -168,3 +196,4 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
     </div>
   );
 }
+
