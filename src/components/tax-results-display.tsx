@@ -111,53 +111,61 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
       </Accordion>
       
       {results.taxableIncome > 0 && results.allowableInvestmentLimit > 0 && (
-        <Card className="shadow-lg">
-          <CardHeader className="bg-teal-600/10 dark:bg-teal-400/10 p-4 md:p-6">
-            <CardTitle className="flex items-center text-teal-700 dark:text-teal-300 font-headline text-lg md:text-xl">
-              <Lightbulb className="mr-2 h-6 w-6" />
-              Investment Rebate Tip
-            </CardTitle>
-            <CardDescription>Maximize your savings for Income Year: {results.incomeYear}</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base">
-            <p className="mb-3">
-              To maximize your potential tax rebate for income year {results.incomeYear},
-              you can make eligible investments up to <strong>{formatCurrency(results.allowableInvestmentLimit)}</strong>.
-              Below are some common investment avenues and their specific considerations:
-            </p>
-            <div className="overflow-x-auto">
-              <Table className="mb-3 text-sm md:text-base min-w-[600px] md:min-w-full">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="font-medium">Investment Avenue</TableHead>
-                    <TableHead className="font-medium">Tax Rebate Considerations</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>Shares of companies listed on the stock exchange in Bangladesh</TableCell>
-                    <TableCell>No upper limit for tax rebate.</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Investment in mutual funds/unit funds or debentures</TableCell>
-                    <TableCell>Maximum limit for tax rebate – {formatCurrency(500000)}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Investment in Deposit Pension Scheme (DPS) of any scheduled bank or financial institution</TableCell>
-                    <TableCell>Maximum limit for tax rebate – {formatCurrency(120000)}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Investment in government securities (such as savings certificates, T-bonds/bills, etc.)</TableCell>
-                    <TableCell>Maximum limit for tax rebate – {formatCurrency(500000)}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-            <p>
-              The term 'No upper limit for tax rebate' for certain investments means there's no specific cap for that category's contribution to your total eligible investment amount. The overall eligible investment is still capped at {formatCurrency(results.allowableInvestmentLimit)}. The tax rebate is then 15% of this total actual eligible investment (considering various specific limits and actual investments), but cannot exceed your gross tax liability. These are general guidelines; always consult with a tax professional for personalized advice.
-            </p>
-          </CardContent>
-        </Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="investment-rebate-tip" className="border-none">
+            <Card className="shadow-lg">
+              <AccordionTrigger className="w-full hover:no-underline">
+                <CardHeader className="bg-teal-600/10 dark:bg-teal-400/10 p-4 md:p-6 w-full text-left">
+                  <CardTitle className="flex items-center text-teal-700 dark:text-teal-300 font-headline text-lg md:text-xl">
+                    <Lightbulb className="mr-2 h-6 w-6" />
+                    Investment Rebate Tip (Click to Expand)
+                  </CardTitle>
+                  <CardDescription>Maximize your savings for Income Year: {results.incomeYear}</CardDescription>
+                </CardHeader>
+              </AccordionTrigger>
+              <AccordionContent>
+                <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base">
+                  <p className="mb-3">
+                    To maximize your potential tax rebate for income year {results.incomeYear},
+                    you can make eligible investments up to <strong>{formatCurrency(results.allowableInvestmentLimit)}</strong>.
+                    Below are some common investment avenues and their specific considerations:
+                  </p>
+                  <div className="overflow-x-auto">
+                    <Table className="mb-3 text-sm md:text-base min-w-[600px] md:min-w-full">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="font-medium">Investment Avenue</TableHead>
+                          <TableHead className="font-medium">Tax Rebate Considerations</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>Shares of companies listed on the stock exchange in Bangladesh</TableCell>
+                          <TableCell>No upper limit for tax rebate.</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Investment in mutual funds/unit funds or debentures</TableCell>
+                          <TableCell>Maximum limit for tax rebate – {formatCurrency(500000)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Investment in Deposit Pension Scheme (DPS) of any scheduled bank or financial institution</TableCell>
+                          <TableCell>Maximum limit for tax rebate – {formatCurrency(120000)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Investment in government securities (such as savings certificates, T-bonds/bills, etc.)</TableCell>
+                          <TableCell>Maximum limit for tax rebate – {formatCurrency(500000)}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <p>
+                    The term 'No upper limit for tax rebate' for certain investments means there's no specific cap for that category's contribution to your total eligible investment amount. The overall eligible investment is still capped at {formatCurrency(results.allowableInvestmentLimit)}. The tax rebate is then 15% of this total actual eligible investment (considering various specific limits and actual investments), but cannot exceed your gross tax liability. These are general guidelines; always consult with a tax professional for personalized advice.
+                  </p>
+                </CardContent>
+              </AccordionContent>
+            </Card>
+          </AccordionItem>
+        </Accordion>
       )}
 
      {results.taxableIncome > 0 && results.grossTax > 0 && (
@@ -188,7 +196,7 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                         {results.taxSlabBreakdown.map((slab, index) => (
                           <TableRow key={index}>
                             <TableCell>{slab.slabDescription}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(slab.taxableAmountInSlab)}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(slab.taxableAmountInSlab, false)}</TableCell>
                             <TableCell className="text-right">{slab.taxRate.toFixed(2)}%</TableCell>
                             <TableCell className="text-right">{formatCurrency(slab.taxOnSlab)}</TableCell>
                           </TableRow>
@@ -220,3 +228,4 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
     </div>
   );
 }
+
