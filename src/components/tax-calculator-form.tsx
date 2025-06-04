@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   calculateBdTax,
   type TaxCalculationResult,
@@ -16,14 +17,17 @@ import {
   MAX_INVESTMENT_ALLOWANCE_ABSOLUTE
 } from "@/lib/tax-helpers";
 import { TaxResultsDisplay } from "./tax-results-display";
-import { Calculator, Gift, PiggyBank, WalletCards, AlertCircle, CalendarDays } from "lucide-react";
+import { Calculator, Gift, PiggyBank, WalletCards, AlertCircle, CalendarDays, Landmark } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function TaxCalculatorForm() {
+  const [incomeInputMode, setIncomeInputMode] = useState<"monthly" | "annual">("monthly");
   const [monthlySalary, setMonthlySalary] = useState("");
   const [bonuses, setBonuses] = useState("");
+  const [totalAnnualGrossIncome, setTotalAnnualGrossIncome] = useState("");
+
   const [includeInvestments, setIncludeInvestments] = useState(false);
   const [investmentAmount, setInvestmentAmount] = useState("");
   const [incomeYear, setIncomeYear] = useState("2025-2026");
@@ -34,23 +38,33 @@ export function TaxCalculatorForm() {
   const handleIncludeInvestmentsChange = (checked: boolean) => {
     setIncludeInvestments(checked);
     if (checked) {
-      const salaryNum = parseFloat(monthlySalary);
-      const bonusesNum = parseFloat(bonuses) || 0;
+      let annualIncomeForInvestmentCalc = 0;
+      let salaryForInvestmentCalcIsValid = false;
 
-      if (!isNaN(salaryNum) && salaryNum > 0) {
-        const annualSalary = salaryNum * 12;
-        const totalAnnualIncome = annualSalary + bonusesNum;
+      if (incomeInputMode === "monthly") {
+        const salaryNum = parseFloat(monthlySalary);
+        const bonusesNum = parseFloat(bonuses) || 0;
+        if (!isNaN(salaryNum) && salaryNum > 0) {
+          annualIncomeForInvestmentCalc = (salaryNum * 12) + bonusesNum;
+          salaryForInvestmentCalcIsValid = true;
+        }
+      } else { // annual mode
+        const totalAnnualNum = parseFloat(totalAnnualGrossIncome);
+        if (!isNaN(totalAnnualNum) && totalAnnualNum > 0) {
+          annualIncomeForInvestmentCalc = totalAnnualNum;
+          salaryForInvestmentCalcIsValid = true;
+        }
+      }
 
-        const exemptionBasedOnIncome = totalAnnualIncome * STANDARD_EXEMPTION_INCOME_FRACTION;
+      if (salaryForInvestmentCalcIsValid) {
+        const exemptionBasedOnIncome = annualIncomeForInvestmentCalc * STANDARD_EXEMPTION_INCOME_FRACTION;
         const standardExemptionApplied = Math.min(STANDARD_EXEMPTION_ABSOLUTE_CAP, exemptionBasedOnIncome);
-        // No need to round standardExemptionApplied here for this preliminary calc, final calc in tax-helpers will do it.
-        const preliminaryTaxableIncome = Math.max(0, totalAnnualIncome - standardExemptionApplied);
-
+        const preliminaryTaxableIncome = Math.max(0, annualIncomeForInvestmentCalc - standardExemptionApplied);
 
         if (preliminaryTaxableIncome > 0) {
           const maxInvestmentByIncome = preliminaryTaxableIncome * MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME;
           const preliminaryAllowableInvestment = Math.min(maxInvestmentByIncome, MAX_INVESTMENT_ALLOWANCE_ABSOLUTE);
-          setInvestmentAmount(Math.ceil(preliminaryAllowableInvestment).toFixed(0)); // Round up for display
+          setInvestmentAmount(Math.ceil(preliminaryAllowableInvestment).toFixed(0));
         } else {
           setInvestmentAmount("0");
         }
@@ -67,19 +81,37 @@ export function TaxCalculatorForm() {
     setError(null);
     setTaxResults(null);
 
-    const salaryNum = parseFloat(monthlySalary);
-    const bonusesNum = parseFloat(bonuses) || 0;
-    const investmentNum = includeInvestments ? (parseFloat(investmentAmount) || 0) : 0;
+    let salaryNum = 0;
+    let bonusesNum = 0;
 
-    if (isNaN(salaryNum) || salaryNum <= 0) {
-      setError("Please enter a valid monthly gross salary.");
-      toast({
-        title: "Invalid Input",
-        description: "Monthly gross salary must be a positive number.",
-        variant: "destructive",
-      });
-      return;
+    if (incomeInputMode === "monthly") {
+      salaryNum = parseFloat(monthlySalary);
+      bonusesNum = parseFloat(bonuses) || 0;
+      if (isNaN(salaryNum) || salaryNum <= 0) {
+        setError("Please enter a valid monthly gross salary.");
+        toast({
+          title: "Invalid Input",
+          description: "Monthly gross salary must be a positive number.",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else { // annual mode
+      const totalAnnualNum = parseFloat(totalAnnualGrossIncome);
+      if (isNaN(totalAnnualNum) || totalAnnualNum <= 0) {
+        setError("Please enter a valid total annual gross income.");
+        toast({
+          title: "Invalid Input",
+          description: "Total annual gross income must be a positive number.",
+          variant: "destructive",
+        });
+        return;
+      }
+      salaryNum = totalAnnualNum / 12; // Effective monthly salary
+      bonusesNum = 0; // Bonuses are included in total annual
     }
+
+    const investmentNum = includeInvestments ? (parseFloat(investmentAmount) || 0) : 0;
 
     if (includeInvestments && (isNaN(investmentNum) || investmentNum < 0)) {
         setError("Please enter a valid investment amount or uncheck the investment option.");
@@ -141,40 +173,91 @@ export function TaxCalculatorForm() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground pt-1">
-                 Note: Tax calculations use rules specific to the selected income year. For 2024-2025, the rules for 2024-2025 are applied.
+                 Note: Tax calculations use rules specific to the selected income year.
               </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="monthlySalary" className="flex items-center text-md">
-                <WalletCards className="mr-2 h-5 w-5 text-primary" />
-                Monthly Gross Salary (BDT)
-              </Label>
-              <Input
-                id="monthlySalary"
-                type="number"
-                value={monthlySalary}
-                onChange={(e) => setMonthlySalary(e.target.value)}
-                placeholder="e.g., 50000"
-                required
-                className="text-base"
-              />
+            <div className="space-y-3">
+              <Label className="text-md">How would you like to enter your income?</Label>
+              <RadioGroup
+                value={incomeInputMode}
+                onValueChange={(value: "monthly" | "annual") => {
+                  setIncomeInputMode(value);
+                  // Optionally reset other fields when mode changes
+                  // setMonthlySalary("");
+                  // setBonuses("");
+                  // setTotalAnnualGrossIncome("");
+                }}
+                className="flex flex-col sm:flex-row gap-2 sm:gap-4"
+              >
+                <div className="flex items-center space-x-2 p-3 border rounded-md flex-1 bg-muted/20 hover:bg-muted/40 cursor-pointer">
+                  <RadioGroupItem value="monthly" id="r1" />
+                  <Label htmlFor="r1" className="cursor-pointer text-sm sm:text-md">Enter Monthly Salary & Annual Bonuses</Label>
+                </div>
+                <div className="flex items-center space-x-2 p-3 border rounded-md flex-1 bg-muted/20 hover:bg-muted/40 cursor-pointer">
+                  <RadioGroupItem value="annual" id="r2" />
+                  <Label htmlFor="r2" className="cursor-pointer text-sm sm:text-md">Enter Total Annual Gross Income</Label>
+                </div>
+              </RadioGroup>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="bonuses" className="flex items-center text-md">
-                <Gift className="mr-2 h-5 w-5 text-primary" />
-                Total Annual Bonuses/Other Income (BDT)
-              </Label>
-              <Input
-                id="bonuses"
-                type="number"
-                value={bonuses}
-                onChange={(e) => setBonuses(e.target.value)}
-                placeholder="e.g., 100000"
-                className="text-base"
-              />
-            </div>
+
+            {incomeInputMode === "monthly" && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="monthlySalary" className="flex items-center text-md">
+                    <WalletCards className="mr-2 h-5 w-5 text-primary" />
+                    Monthly Gross Salary (BDT)
+                  </Label>
+                  <Input
+                    id="monthlySalary"
+                    type="number"
+                    value={monthlySalary}
+                    onChange={(e) => setMonthlySalary(e.target.value)}
+                    placeholder="e.g., 50000"
+                    required={incomeInputMode === "monthly"}
+                    className="text-base"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="bonuses" className="flex items-center text-md">
+                    <Gift className="mr-2 h-5 w-5 text-primary" />
+                    Total Annual Bonuses/Other Income (BDT)
+                  </Label>
+                  <Input
+                    id="bonuses"
+                    type="number"
+                    value={bonuses}
+                    onChange={(e) => setBonuses(e.target.value)}
+                    placeholder="e.g., 100000 (optional)"
+                    className="text-base"
+                  />
+                </div>
+              </>
+            )}
+
+            {incomeInputMode === "annual" && (
+              <div className="space-y-2">
+                <Label htmlFor="totalAnnualGrossIncome" className="flex items-center text-md">
+                  <Landmark className="mr-2 h-5 w-5 text-primary" />
+                  Total Annual Gross Income (BDT)
+                </Label>
+                <Input
+                  id="totalAnnualGrossIncome"
+                  type="number"
+                  value={totalAnnualGrossIncome}
+                  onChange={(e) => setTotalAnnualGrossIncome(e.target.value)}
+                  placeholder="e.g., 700000"
+                  required={incomeInputMode === "annual"}
+                  className="text-base"
+                />
+                 <p className="text-xs text-muted-foreground pt-1">
+                    This should be your total income for the year, including salary, bonuses, and any other taxable earnings.
+                  </p>
+              </div>
+            )}
+
 
             <div className="flex items-center space-x-3 p-3 border rounded-md bg-muted/30">
               <Switch
@@ -201,6 +284,9 @@ export function TaxCalculatorForm() {
                   placeholder="e.g., 200000"
                   className="text-base"
                 />
+                 <p className="text-xs text-muted-foreground pt-1">
+                    Enter your total actual investments eligible for rebate. The calculator will cap this at the allowable limit if necessary.
+                  </p>
               </div>
             )}
              <Button type="submit" className="w-full text-base py-3 sm:py-4 md:text-lg md:py-6 bg-accent hover:bg-accent/90 text-accent-foreground">
@@ -218,3 +304,6 @@ export function TaxCalculatorForm() {
     </div>
   );
 }
+
+
+    
