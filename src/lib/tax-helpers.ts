@@ -20,7 +20,6 @@ export interface TaxCalculationResult {
   monthlyTaxDeduction: number;
   taxSlabBreakdown: TaxSlabDetail[];
   netAnnualIncome: number;
-  netMonthlyIncome: number;
   netMonthlySalaryPortionAfterOverallTax: number;
   incomeYear: string;
 }
@@ -54,7 +53,7 @@ const getTaxSlabsForYear = (incomeYear: string) => {
 };
 
 
-const MINIMUM_TAX_THRESHOLD = 350000; // This might need adjustment based on the selected year's first slab.
+const MINIMUM_TAX_THRESHOLD_BASE = 350000; // Base, will be adjusted by first slab
 const MINIMUM_TAX_AMOUNT = 5000;
 
 export const INVESTMENT_REBATE_RATE = 0.15;
@@ -75,8 +74,9 @@ export function calculateBdTax(
   const annualSalary = monthlyGrossSalary * 12;
   const totalAnnualIncome = annualSalary + (annualBonuses || 0);
 
-  const exemptionBasedOnIncome = totalAnnualIncome * STANDARD_EXEMPTION_INCOME_FRACTION;
-  const standardExemptionApplied = Math.min(STANDARD_EXEMPTION_ABSOLUTE_CAP, exemptionBasedOnIncome);
+  let exemptionBasedOnIncome = totalAnnualIncome * STANDARD_EXEMPTION_INCOME_FRACTION;
+  let standardExemptionApplied = Math.min(STANDARD_EXEMPTION_ABSOLUTE_CAP, exemptionBasedOnIncome);
+  standardExemptionApplied = Math.ceil(standardExemptionApplied);
 
   const taxableIncome = Math.max(0, totalAnnualIncome - standardExemptionApplied);
 
@@ -96,12 +96,11 @@ export function calculateBdTax(
     
     let slabStart = cumulativeSlabLimit + 1;
     if (cumulativeSlabLimit === 0 && slab.rate === 0.00) slabStart = 0;
-    let slabEnd = cumulativeSlabLimit + currentSlabLimit;
-    if (slab.limit === Infinity) slabEnd = Infinity;
 
 
-    const taxOnSlab = incomeInThisSlab * slab.rate;
-    grossTax += taxOnSlab;
+    let taxOnSlab = incomeInThisSlab * slab.rate;
+    taxOnSlab = Math.ceil(taxOnSlab); // Round up tax for this slab
+    grossTax += taxOnSlab; // Accumulate rounded up tax
 
     let slabDescription = "";
     if (slab.limit === Infinity) {
@@ -118,7 +117,7 @@ export function calculateBdTax(
       slabDescription,
       taxableAmountInSlab: incomeInThisSlab,
       taxRate: slab.rate * 100,
-      taxOnSlab: taxOnSlab,
+      taxOnSlab: taxOnSlab, // Store rounded tax
     });
 
     remainingIncome -= incomeInThisSlab;
@@ -135,42 +134,42 @@ export function calculateBdTax(
   if (taxableIncome > 0) {
       const maxInvestmentByIncome = taxableIncome * MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME;
       theoreticalAllowableInvestmentLimitForTip = Math.min(maxInvestmentByIncome, MAX_INVESTMENT_ALLOWANCE_ABSOLUTE);
+      theoreticalAllowableInvestmentLimitForTip = Math.ceil(theoreticalAllowableInvestmentLimitForTip); // Round up
   }
 
 
   let taxRebate = 0;
-  let investmentAmountConsidered = 0; 
+  let investmentAmountConsidered = totalAnnualInvestment; 
 
   if (includeInvestments && totalAnnualInvestment > 0 && taxableIncome > 0) {
       const actualEligibleInvestmentForRebateCalc = Math.min(totalAnnualInvestment, theoreticalAllowableInvestmentLimitForTip);
-      investmentAmountConsidered = totalAnnualInvestment; // Use user's input for display
-      taxRebate = actualEligibleInvestmentForRebateCalc * INVESTMENT_REBATE_RATE;
+      let calculatedRebate = actualEligibleInvestmentForRebateCalc * INVESTMENT_REBATE_RATE;
+      taxRebate = Math.ceil(calculatedRebate); // Round up
   }
 
   taxRebate = Math.min(taxRebate, grossTax); 
-  const netTaxPayable = grossTax - taxRebate;
+  const netTaxPayable = Math.max(0, grossTax - taxRebate);
 
-  let currentMinimumTaxThreshold = MINIMUM_TAX_THRESHOLD;
-  // Adjust minimum tax threshold if the first slab limit of the selected year is different
+
+  let currentMinimumTaxThreshold = MINIMUM_TAX_THRESHOLD_BASE;
   if (taxSlabsToUse[0]?.limit && taxSlabsToUse[0].rate === 0.00) {
       currentMinimumTaxThreshold = taxSlabsToUse[0].limit;
   }
 
+  let finalTaxDue = netTaxPayable;
 
-  let finalTaxDue = Math.max(0, netTaxPayable);
-
-  // Apply minimum tax rule: If taxable income is above the first slab (0% tax slab) and tax is payable, it shouldn't be less than BDT 5,000.
-  // However, if taxable income is below or equal to the first slab limit, tax is 0.
   if (taxableIncome > currentMinimumTaxThreshold && finalTaxDue > 0 && finalTaxDue < MINIMUM_TAX_AMOUNT) {
     finalTaxDue = MINIMUM_TAX_AMOUNT;
-  } else if (taxableIncome <= currentMinimumTaxThreshold && finalTaxDue <=0 ) { // If income is within non-taxable limit
+  } else if (taxableIncome <= currentMinimumTaxThreshold && finalTaxDue <=0 ) {
      finalTaxDue = 0;
   }
+  finalTaxDue = Math.ceil(finalTaxDue); // Final round up for the amount due
 
 
-  const monthlyTaxDeduction = finalTaxDue > 0 ? finalTaxDue / 12 : 0;
+  let monthlyTaxDeduction = finalTaxDue > 0 ? finalTaxDue / 12 : 0;
+  monthlyTaxDeduction = Math.ceil(monthlyTaxDeduction); // Round up
+
   const netAnnualIncome = totalAnnualIncome - finalTaxDue;
-  const netMonthlyIncome = netAnnualIncome > 0 ? netAnnualIncome / 12 : totalAnnualIncome / 12; // if no tax, net monthly is gross monthly
   const netMonthlySalaryPortionAfterOverallTax = monthlyGrossSalary - monthlyTaxDeduction;
 
   return {
@@ -178,22 +177,25 @@ export function calculateBdTax(
     totalAnnualIncome,
     standardExemptionApplied,
     taxableIncome,
-    grossTax,
-    investmentAmountConsidered, // This should be the user's input if provided, or the autofilled one
-    allowableInvestmentLimit: theoreticalAllowableInvestmentLimitForTip,
-    taxRebate,
+    grossTax, // Already sum of rounded slab taxes
+    investmentAmountConsidered,
+    allowableInvestmentLimit: theoreticalAllowableInvestmentLimitForTip, // Already rounded
+    taxRebate, // Already rounded
     netTaxPayable,
-    finalTaxDue,
-    monthlyTaxDeduction,
+    finalTaxDue, // Already rounded
+    monthlyTaxDeduction, // Already rounded
     taxSlabBreakdown,
     netAnnualIncome,
-    netMonthlyIncome,
     netMonthlySalaryPortionAfterOverallTax,
     incomeYear,
   };
 }
 
 export function formatCurrency(amount: number, includeSymbol: boolean = true): string {
-  const formattedAmount = amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const roundedAmount = Math.ceil(amount); // Round up to the nearest whole number
+  const formattedAmount = roundedAmount.toLocaleString('en-IN', { 
+    minimumFractionDigits: 0, // Display as whole number
+    maximumFractionDigits: 0  // Display as whole number
+  });
   return includeSymbol ? `BDT ${formattedAmount}` : formattedAmount;
 }

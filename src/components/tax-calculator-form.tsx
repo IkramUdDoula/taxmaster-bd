@@ -26,7 +26,7 @@ export function TaxCalculatorForm() {
   const [bonuses, setBonuses] = useState("");
   const [includeInvestments, setIncludeInvestments] = useState(false);
   const [investmentAmount, setInvestmentAmount] = useState("");
-  const [incomeYear, setIncomeYear] = useState("2025-2026"); // Default to 2025-2026
+  const [incomeYear, setIncomeYear] = useState("2025-2026");
   const [taxResults, setTaxResults] = useState<TaxCalculationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -43,21 +43,22 @@ export function TaxCalculatorForm() {
 
         const exemptionBasedOnIncome = totalAnnualIncome * STANDARD_EXEMPTION_INCOME_FRACTION;
         const standardExemptionApplied = Math.min(STANDARD_EXEMPTION_ABSOLUTE_CAP, exemptionBasedOnIncome);
+        // No need to round standardExemptionApplied here for this preliminary calc, final calc in tax-helpers will do it.
         const preliminaryTaxableIncome = Math.max(0, totalAnnualIncome - standardExemptionApplied);
+
 
         if (preliminaryTaxableIncome > 0) {
           const maxInvestmentByIncome = preliminaryTaxableIncome * MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME;
           const preliminaryAllowableInvestment = Math.min(maxInvestmentByIncome, MAX_INVESTMENT_ALLOWANCE_ABSOLUTE);
-          setInvestmentAmount(preliminaryAllowableInvestment.toFixed(0));
+          setInvestmentAmount(Math.ceil(preliminaryAllowableInvestment).toFixed(0)); // Round up for display
         } else {
           setInvestmentAmount("0");
         }
       } else {
-        // If salary is not valid, prompt or set to 0
         setInvestmentAmount("0");
       }
     } else {
-      setInvestmentAmount(""); // Clear investment amount if switch is off
+      setInvestmentAmount("");
     }
   };
 
@@ -141,7 +142,7 @@ export function TaxCalculatorForm() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground pt-1">
-                Note: Tax calculations use rules specific to the selected income year. For 2023-2024 & 2024-2025, rules for 2024-2025 are applied.
+                 Note: Tax calculations use rules specific to the selected income year. For 2023-2024 & 2024-2025, the rules for 2024-2025 are applied.
               </p>
             </div>
 
