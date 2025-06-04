@@ -58,6 +58,14 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                 <strong className="text-md">{formatCurrency(results.totalAnnualIncome)}</strong>
             </div>
             <Separator />
+             <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                    <Wallet className="mr-2 h-5 w-5 text-foreground/80" />
+                    <span>Net Monthly Salary (after tax deduction):</span>
+                </div>
+                <strong className="text-md">{formatCurrency(results.netMonthlySalaryPortionAfterOverallTax)}</strong>
+            </div>
+            <Separator />
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <ArrowDownCircle className="mr-2 h-5 w-5 text-green-700 dark:text-green-500" />
@@ -196,4 +204,3 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
     </div>
   );
 }
-
