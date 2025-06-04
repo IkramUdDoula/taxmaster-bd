@@ -77,6 +77,7 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                   <p className="text-sm text-teal-700 dark:text-teal-300">
                     To maximize your potential tax rebate for income year {results.incomeYear},
                     you can make eligible investments up to <strong>{formatCurrency(results.allowableInvestmentLimit)}</strong>.
+                    Common eligible investment avenues in Bangladesh include Life Insurance Premiums, contributions to Provident Fund (PF), approved Superannuation Funds, National Savings Certificates (Sanchayapatra), investments in the stock market (subject to conditions), DPS, and donations to specified charitable organizations.
                     The tax rebate is 15% of your actual eligible investment, but cannot exceed your gross tax liability.
                   </p>
                 </div>

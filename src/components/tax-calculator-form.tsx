@@ -19,7 +19,7 @@ export function TaxCalculatorForm() {
   const [bonuses, setBonuses] = useState("");
   const [includeInvestments, setIncludeInvestments] = useState(false);
   const [investmentAmount, setInvestmentAmount] = useState("");
-  const [incomeYear, setIncomeYear] = useState("2024-2025");
+  const [incomeYear, setIncomeYear] = useState("2025-2026"); // Default to 2025-2026
   const [taxResults, setTaxResults] = useState<TaxCalculationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -91,7 +91,7 @@ export function TaxCalculatorForm() {
             <div className="space-y-2">
               <Label htmlFor="incomeYear" className="flex items-center text-md">
                 <CalendarDays className="mr-2 h-5 w-5 text-primary" />
-                Income Year (Calculation based on 2024-2025 rules)
+                Income Year
               </Label>
               <Select value={incomeYear} onValueChange={setIncomeYear}>
                 <SelectTrigger id="incomeYear" className="w-full text-base">
@@ -104,7 +104,7 @@ export function TaxCalculatorForm() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground pt-1">
-                Note: Current tax calculations are based on the rules for the income year 2024-2025, regardless of selection.
+                Note: Tax calculations use rules specific to 2024-2025 or 2025-2026. Other selections will use 2024-2025 rules as a fallback.
               </p>
             </div>
 
