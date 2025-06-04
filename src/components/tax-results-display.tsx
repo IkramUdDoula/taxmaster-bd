@@ -111,7 +111,7 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
             </CardTitle>
             <CardDescription>Maximize your savings for Income Year: {results.incomeYear}</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base text-teal-700 dark:text-teal-300">
+          <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base">
             <p className="mb-3">
               To maximize your potential tax rebate for income year {results.incomeYear},
               you can make eligible investments up to <strong>{formatCurrency(results.allowableInvestmentLimit)}</strong>.
@@ -121,8 +121,8 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
               <Table className="mb-3 text-sm md:text-base min-w-[600px] md:min-w-full">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-teal-700 dark:text-teal-400 font-medium">Investment Avenue</TableHead>
-                    <TableHead className="text-teal-700 dark:text-teal-400 font-medium">Tax Rebate Considerations</TableHead>
+                    <TableHead className="font-medium">Investment Avenue</TableHead>
+                    <TableHead className="font-medium">Tax Rebate Considerations</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -212,4 +212,3 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
     </div>
   );
 }
-
