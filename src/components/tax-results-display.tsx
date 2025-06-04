@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ClipboardList, Landmark, TrendingDown, Briefcase, ArrowUpCircle, ArrowDownCircle, Info, Lightbulb, Wallet } from "lucide-react";
+import { ClipboardList, Landmark, TrendingDown, Briefcase, ArrowUpCircle, ArrowDownCircle, Info, Lightbulb } from "lucide-react";
 
 interface TaxResultsDisplayProps {
   results: TaxCalculationResult;
@@ -65,13 +65,7 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                 </div>
                 <strong className="text-md text-green-700 dark:text-green-500">{formatCurrency(results.netAnnualIncome)}</strong>
             </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                    <Wallet className="mr-2 h-5 w-5 text-green-700 dark:text-green-500" />
-                </div>
-                <strong className="text-md text-green-700 dark:text-green-500">{formatCurrency(results.netMonthlyIncome)}</strong>
-            </div>
+            
 
             {results.taxableIncome > 0 && results.allowableInvestmentLimit > 0 && (
               <>
@@ -173,4 +167,3 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
     </div>
   );
 }
-
