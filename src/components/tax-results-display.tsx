@@ -24,8 +24,8 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
           </CardTitle>
           <CardDescription>For Income Year: {results.incomeYear}</CardDescription>
         </CardHeader>
-        <CardContent className="p-4 md:p-6 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+        <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <p><strong>Total Annual Gross Income:</strong> {formatCurrency(results.totalAnnualIncome)}</p>
             <p><strong>Standard Exemption Applied:</strong> <span className="text-green-700 dark:text-green-500">-{formatCurrency(results.standardExemptionApplied)}</span></p>
             <p><strong>Taxable Income:</strong> {formatCurrency(results.taxableIncome)}</p>
@@ -50,13 +50,13 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
             </CardTitle>
             <CardDescription>Income Year: {results.incomeYear}</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 md:p-6 space-y-4 text-sm">
+          <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base">
               <div className="flex items-center justify-between">
                   <div className="flex items-center">
                       <ArrowUpCircle className="mr-2 h-5 w-5 text-foreground/80" />
                       <span>Total Yearly Gross Income:</span>
                   </div>
-                  <strong className="text-md">{formatCurrency(results.totalAnnualIncome)}</strong>
+                  <strong className="text-md md:text-lg">{formatCurrency(results.totalAnnualIncome)}</strong>
               </div>
               <Separator />
                <div className="flex items-center justify-between">
@@ -64,7 +64,7 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                       <Wallet className="mr-2 h-5 w-5 text-foreground/80" />
                       <span>Net Monthly Salary (after tax deduction):</span>
                   </div>
-                  <strong className="text-md">{formatCurrency(results.netMonthlySalaryPortionAfterOverallTax)}</strong>
+                  <strong className="text-md md:text-lg">{formatCurrency(results.netMonthlySalaryPortionAfterOverallTax)}</strong>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
@@ -72,14 +72,14 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                       <ArrowDownCircle className="mr-2 h-5 w-5 text-green-700 dark:text-green-500" />
                       <span>Total Yearly Net Income (Take Home):</span>
                   </div>
-                  <strong className="text-md text-green-700 dark:text-green-500">{formatCurrency(results.netAnnualIncome)}</strong>
+                  <strong className="text-md md:text-lg text-green-700 dark:text-green-500">{formatCurrency(results.netAnnualIncome)}</strong>
               </div>
           </CardContent>
         </Card>
 
         <Card className="shadow-lg">
           <CardHeader className="bg-accent/10 p-4 md:p-6">
-            <CardTitle className="flex items-center text-accent-foreground font-headline text-lg md:text-xl">
+            <CardTitle className="flex items-center text-primary font-headline text-lg md:text-xl">
               <Landmark className="mr-2 h-6 w-6 text-accent" />
               Final Tax &amp; Monthly Deduction
             </CardTitle>
@@ -92,7 +92,7 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                   {formatCurrency(results.finalTaxDue)}
               </p>
               <Separator className="my-4"/>
-              <p className="text-sm md:text-md">
+              <p className="text-sm md:text-base">
                   <strong>Suggested Monthly Tax Deduction (from Gross Salary):</strong>
               </p>
               <p className="text-xl md:text-2xl font-semibold text-accent">
@@ -111,14 +111,14 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
             </CardTitle>
             <CardDescription>Maximize your savings for Income Year: {results.incomeYear}</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 md:p-6 space-y-4 text-sm text-teal-700 dark:text-teal-300">
+          <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base text-teal-700 dark:text-teal-300">
             <p className="mb-3">
               To maximize your potential tax rebate for income year {results.incomeYear},
               you can make eligible investments up to <strong>{formatCurrency(results.allowableInvestmentLimit)}</strong>.
               Below are some common investment avenues and their specific considerations:
             </p>
             <div className="overflow-x-auto">
-              <Table className="mb-3 text-sm min-w-[600px] md:min-w-full">
+              <Table className="mb-3 text-sm md:text-base min-w-[600px] md:min-w-full">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-teal-700 dark:text-teal-400 font-medium">Investment Avenue</TableHead>
@@ -167,7 +167,7 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
               <AccordionContent>
                 <CardContent className="p-0">
                   <div className="overflow-x-auto">
-                    <Table className="min-w-[600px] md:min-w-full">
+                    <Table className="min-w-[600px] md:min-w-full text-sm md:text-base">
                       <TableHeader>
                         <TableRow>
                           <TableHead>Slab Description</TableHead>
@@ -205,10 +205,11 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                 <Info className="mr-2 h-5 w-5"/> Important Note
             </CardTitle>
          </CardHeader>
-         <CardContent className="text-sm text-blue-700 dark:text-blue-300 p-4 md:p-6 pt-0 md:pt-0">
+         <CardContent className="text-sm md:text-base text-blue-700 dark:text-blue-300 p-4 md:p-6 pt-0 md:pt-0">
             <p>The tax calculations provided are based on the rules applicable for the <strong>Income Year {results.incomeYear}</strong> (Assessment Year typically {parseInt(results.incomeYear.split('-')[0])+1}-{parseInt(results.incomeYear.split('-')[1])+1}). Tax laws can change, so always consult a professional for precise financial planning.</p>
          </CardContent>
       </Card>
     </div>
   );
 }
+
