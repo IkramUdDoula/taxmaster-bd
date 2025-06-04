@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, type FormEvent } from "react";
@@ -8,16 +9,17 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateBdTax, type TaxCalculationResult } from "@/lib/tax-helpers";
 import { TaxResultsDisplay } from "./tax-results-display";
-import { Calculator, Gift, PiggyBank, WalletCards, AlertCircle } from "lucide-react";
+import { Calculator, Gift, PiggyBank, WalletCards, AlertCircle, CalendarDays } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function TaxCalculatorForm() {
   const [monthlySalary, setMonthlySalary] = useState("");
   const [bonuses, setBonuses] = useState("");
   const [includeInvestments, setIncludeInvestments] = useState(false);
   const [investmentAmount, setInvestmentAmount] = useState("");
+  const [incomeYear, setIncomeYear] = useState("2024-2025");
   const [taxResults, setTaxResults] = useState<TaxCalculationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -51,13 +53,12 @@ export function TaxCalculatorForm() {
         return;
     }
 
-
     try {
-      const results = calculateBdTax(salaryNum, bonusesNum, includeInvestments, investmentNum);
+      const results = calculateBdTax(salaryNum, bonusesNum, includeInvestments, investmentNum, incomeYear);
       setTaxResults(results);
       toast({
         title: "Calculation Successful!",
-        description: "Your tax details are now displayed below.",
+        description: `Your tax details for income year ${incomeYear} are now displayed below.`,
       });
     } catch (e: any) {
       setError(e.message || "An unexpected error occurred during calculation.");
@@ -87,6 +88,26 @@ export function TaxCalculatorForm() {
             </Alert>
           )}
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="incomeYear" className="flex items-center text-md">
+                <CalendarDays className="mr-2 h-5 w-5 text-primary" />
+                Income Year (Calculation based on 2024-2025 rules)
+              </Label>
+              <Select value={incomeYear} onValueChange={setIncomeYear}>
+                <SelectTrigger id="incomeYear" className="w-full text-base">
+                  <SelectValue placeholder="Select income year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2023-2024">2023-2024</SelectItem>
+                  <SelectItem value="2024-2025">2024-2025</SelectItem>
+                  <SelectItem value="2025-2026">2025-2026</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground pt-1">
+                Note: Current tax calculations are based on the rules for the income year 2024-2025, regardless of selection.
+              </p>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="monthlySalary" className="flex items-center text-md">
                 <WalletCards className="mr-2 h-5 w-5 text-primary" />
