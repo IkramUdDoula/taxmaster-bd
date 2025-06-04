@@ -80,7 +80,7 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
         <Card className="shadow-lg">
           <CardHeader className="bg-accent/10 p-4 md:p-6">
             <CardTitle className="flex items-center text-primary font-headline text-lg md:text-xl">
-              <Landmark className="mr-2 h-6 w-6 text-accent" />
+              <Landmark className="mr-2 h-6 w-6 text-primary" />
               Final Tax &amp; Monthly Deduction
             </CardTitle>
           </CardHeader>
