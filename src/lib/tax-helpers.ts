@@ -26,11 +26,11 @@ export interface TaxCalculationResult {
 // Tax slabs for general individual taxpayers (Based on Finance Act for Income Year 2024-2025 / Assessment Year 2025-2026)
 const TAX_SLABS_2024_2025 = [
   { limit: 350000, rate: 0.00 }, // First 350,000
-  { limit: 100000, rate: 0.05 }, // Next 100,000 (Total 450,000)
-  { limit: 400000, rate: 0.10 }, // Next 400,000 (Total 850,000) - Updated from 300k
-  { limit: 500000, rate: 0.15 }, // Next 500,000 (Total 1,350,000) - Updated from 400k
-  { limit: 500000, rate: 0.20 }, // Next 500,000 (Total 1,850,000)
-  { limit: Infinity, rate: 0.25 }, // On balance amount
+  { limit: 100000, rate: 0.05 }, // Next 100,000 (Cumulative: 450,000)
+  { limit: 300000, rate: 0.10 }, // Next 300,000 (Cumulative: 750,000)
+  { limit: 400000, rate: 0.15 }, // Next 400,000 (Cumulative: 1,150,000)
+  { limit: 500000, rate: 0.20 }, // Next 500,000 (Cumulative: 1,650,000)
+  { limit: Infinity, rate: 0.25 }, // On balance amount (Above 1,650,000)
 ];
 
 // For now, we'll use 2024-2025 rules regardless of selected year.
@@ -92,12 +92,12 @@ export function calculateBdTax(
 
     let slabDescription = "";
     if (slab.limit === Infinity) {
-      slabDescription = `Above ${cumulativeSlabLimit.toLocaleString()}`;
+      slabDescription = `Above ${formatCurrency(cumulativeSlabLimit, false)}`;
     } else if (cumulativeSlabLimit === 0 && slab.rate === 0.00) {
-       slabDescription = `Up to ${currentSlabLimit.toLocaleString()}`;
+       slabDescription = `Up to ${formatCurrency(currentSlabLimit, false)}`;
     }
      else {
-      slabDescription = `On next ${currentSlabLimit.toLocaleString()} (from ${formatCurrency(slabStart, false)} to ${slab.limit === Infinity ? 'balance' : formatCurrency(slabEnd, false)})`;
+      slabDescription = `On next ${formatCurrency(currentSlabLimit, false)} (from ${formatCurrency(slabStart, false)} to ${slab.limit === Infinity ? 'balance' : formatCurrency(slabEnd, false)})`;
     }
 
 
@@ -114,8 +114,8 @@ export function calculateBdTax(
     }
   }
   
-  if (taxableIncome > 0 && taxableIncome <= taxSlabsToUse[0].limit && taxSlabBreakdown.length > 0 && taxSlabBreakdown[0].taxRate === 0.00) {
-     taxSlabBreakdown[0].slabDescription = `Up to ${taxSlabsToUse[0].limit.toLocaleString()}`;
+  if (taxableIncome > 0 && taxSlabsToUse.length > 0 && taxSlabsToUse[0].rate === 0.00 && taxSlabBreakdown.length > 0 && taxSlabBreakdown[0].taxRate === 0.00) {
+     taxSlabBreakdown[0].slabDescription = `Up to ${formatCurrency(taxSlabsToUse[0].limit, false)}`;
   }
 
 
@@ -128,20 +128,23 @@ export function calculateBdTax(
     const actualEligibleInvestmentForRebateCalc = Math.min(totalAnnualInvestment, maxInvestmentAllowedByIncome, MAX_INVESTMENT_ALLOWANCE_ABSOLUTE);
     
     allowableInvestmentLimit = Math.min(maxInvestmentAllowedByIncome, MAX_INVESTMENT_ALLOWANCE_ABSOLUTE);
-    investmentAmountConsidered = totalAnnualInvestment;
+    investmentAmountConsidered = totalAnnualInvestment; // Display the user's input
 
     taxRebate = actualEligibleInvestmentForRebateCalc * INVESTMENT_REBATE_RATE;
   }
 
-  taxRebate = Math.min(taxRebate, grossTax);
+  taxRebate = Math.min(taxRebate, grossTax); // Tax rebate cannot exceed gross tax
   const netTaxPayable = grossTax - taxRebate;
   let finalTaxDue = Math.max(0, netTaxPayable);
 
+  // Apply minimum tax if applicable
   if (taxableIncome > MINIMUM_TAX_THRESHOLD && finalTaxDue > 0 && finalTaxDue < MINIMUM_TAX_AMOUNT) {
     finalTaxDue = MINIMUM_TAX_AMOUNT;
   } else if (taxableIncome <= MINIMUM_TAX_THRESHOLD && finalTaxDue <= 0 ) {
+     // If taxable income is below threshold and calculated tax is zero or less, final tax is zero
      finalTaxDue = 0;
   }
+
 
   const monthlyTaxDeduction = finalTaxDue / 12;
   const netAnnualIncome = totalAnnualIncome - finalTaxDue;
@@ -169,3 +172,4 @@ export function formatCurrency(amount: number, includeSymbol: boolean = true): s
   const formattedAmount = amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return includeSymbol ? `BDT ${formattedAmount}` : formattedAmount;
 }
+
