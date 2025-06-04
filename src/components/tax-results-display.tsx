@@ -33,7 +33,6 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
             {results.investmentAmountConsidered > 0 && results.taxableIncome > 0 && (
               <>
                 <p><strong>Investment Amount Considered:</strong> {formatCurrency(results.investmentAmountConsidered)}</p>
-                <p><strong>Allowable Investment for Rebate:</strong> {formatCurrency(results.allowableInvestmentLimit)}</p>
                 <p><strong>Tax Rebate:</strong> <span className="text-green-700 dark:text-green-500">-{formatCurrency(results.taxRebate)}</span></p>
               </>
             )}
@@ -75,7 +74,7 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
                 <strong className="text-md text-green-700 dark:text-green-500">{formatCurrency(results.netMonthlyIncome)}</strong>
             </div>
 
-            {results.taxableIncome > 0 && results.allowableInvestmentLimit > 0 && results.grossTax > 0 && (
+            {results.taxableIncome > 0 && (
               <>
                 <Separator />
                 <div className="pt-4">

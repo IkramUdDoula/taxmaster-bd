@@ -12,7 +12,7 @@ export interface TaxCalculationResult {
   taxableIncome: number;
   grossTax: number;
   investmentAmountConsidered: number;
-  allowableInvestmentLimit: number;
+  allowableInvestmentLimit: number; // Theoretical maximum investment for rebate tip
   taxRebate: number;
   netTaxPayable: number;
   finalTaxDue: number;
@@ -34,21 +34,18 @@ const TAX_SLABS_2024_2025 = [
 ];
 
 // For now, we'll use 2024-2025 rules regardless of selected year.
-// This can be expanded later to use different rules for different years.
 const getTaxSlabsForYear = (incomeYear: string) => {
-  // console.log(`Fetching tax slabs for year: ${incomeYear}. Currently using 2024-2025 default.`);
   return TAX_SLABS_2024_2025;
 };
 
 
 const MINIMUM_TAX_THRESHOLD = 350000;
-const MINIMUM_TAX_AMOUNT = 5000; // Simplified: assuming Dhaka/Chittagong city corp. Varies by location.
+const MINIMUM_TAX_AMOUNT = 5000; 
 
 const INVESTMENT_REBATE_RATE = 0.15; // 15%
 const MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME = 0.20; // 20% of Taxable Income
 const MAX_INVESTMENT_ALLOWANCE_ABSOLUTE = 10000000; // BDT 1 Crore (10 million)
 
-// Standard Exemption Constants
 const STANDARD_EXEMPTION_ABSOLUTE_CAP = 450000;
 const STANDARD_EXEMPTION_INCOME_FRACTION = 1 / 3;
 
@@ -118,30 +115,29 @@ export function calculateBdTax(
      taxSlabBreakdown[0].slabDescription = `Up to ${formatCurrency(taxSlabsToUse[0].limit, false)}`;
   }
 
-
-  let taxRebate = 0;
-  let investmentAmountConsidered = 0;
-  let allowableInvestmentLimit = 0;
-
-  if (includeInvestments && totalAnnualInvestment > 0 && taxableIncome > 0) {
-    const maxInvestmentAllowedByIncome = taxableIncome * MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME;
-    const actualEligibleInvestmentForRebateCalc = Math.min(totalAnnualInvestment, maxInvestmentAllowedByIncome, MAX_INVESTMENT_ALLOWANCE_ABSOLUTE);
-    
-    allowableInvestmentLimit = Math.min(maxInvestmentAllowedByIncome, MAX_INVESTMENT_ALLOWANCE_ABSOLUTE);
-    investmentAmountConsidered = totalAnnualInvestment; // Display the user's input
-
-    taxRebate = actualEligibleInvestmentForRebateCalc * INVESTMENT_REBATE_RATE;
+  // Calculate the theoretical maximum investment limit for the rebate tip
+  let theoreticalAllowableInvestmentLimitForTip = 0;
+  if (taxableIncome > 0) {
+      const maxInvestmentByIncome = taxableIncome * MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME;
+      theoreticalAllowableInvestmentLimitForTip = Math.min(maxInvestmentByIncome, MAX_INVESTMENT_ALLOWANCE_ABSOLUTE);
   }
 
-  taxRebate = Math.min(taxRebate, grossTax); // Tax rebate cannot exceed gross tax
+  let taxRebate = 0;
+  let investmentAmountConsidered = 0; 
+
+  if (includeInvestments && totalAnnualInvestment > 0 && taxableIncome > 0) {
+      const actualEligibleInvestmentForRebateCalc = Math.min(totalAnnualInvestment, theoreticalAllowableInvestmentLimitForTip);
+      investmentAmountConsidered = totalAnnualInvestment; 
+      taxRebate = actualEligibleInvestmentForRebateCalc * INVESTMENT_REBATE_RATE;
+  }
+
+  taxRebate = Math.min(taxRebate, grossTax); 
   const netTaxPayable = grossTax - taxRebate;
   let finalTaxDue = Math.max(0, netTaxPayable);
 
-  // Apply minimum tax if applicable
   if (taxableIncome > MINIMUM_TAX_THRESHOLD && finalTaxDue > 0 && finalTaxDue < MINIMUM_TAX_AMOUNT) {
     finalTaxDue = MINIMUM_TAX_AMOUNT;
   } else if (taxableIncome <= MINIMUM_TAX_THRESHOLD && finalTaxDue <= 0 ) {
-     // If taxable income is below threshold and calculated tax is zero or less, final tax is zero
      finalTaxDue = 0;
   }
 
@@ -155,8 +151,8 @@ export function calculateBdTax(
     standardExemptionApplied,
     taxableIncome,
     grossTax,
-    investmentAmountConsidered: includeInvestments ? totalAnnualInvestment : 0,
-    allowableInvestmentLimit: includeInvestments ? allowableInvestmentLimit : 0,
+    investmentAmountConsidered,
+    allowableInvestmentLimit: theoreticalAllowableInvestmentLimitForTip,
     taxRebate,
     netTaxPayable,
     finalTaxDue,
@@ -172,4 +168,3 @@ export function formatCurrency(amount: number, includeSymbol: boolean = true): s
   const formattedAmount = amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return includeSymbol ? `BDT ${formattedAmount}` : formattedAmount;
 }
-
