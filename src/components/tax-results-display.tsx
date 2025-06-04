@@ -51,28 +51,28 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
             <CardDescription>Income Year: {results.incomeYear}</CardDescription>
           </CardHeader>
           <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base">
-              <div className="flex items-center justify-between">
+              <div className="space-y-1">
                   <div className="flex items-center">
                       <ArrowUpCircle className="mr-2 h-5 w-5 text-foreground/80" />
                       <span>Total Yearly Gross Income:</span>
                   </div>
-                  <strong className="text-md md:text-lg">{formatCurrency(results.totalAnnualIncome)}</strong>
+                  <strong className="text-md md:text-lg block pl-7">{formatCurrency(results.totalAnnualIncome)}</strong>
               </div>
               <Separator />
-               <div className="flex items-center justify-between">
+               <div className="space-y-1">
                   <div className="flex items-center">
                       <Wallet className="mr-2 h-5 w-5 text-foreground/80" />
                       <span>Net Monthly Salary (after tax deduction):</span>
                   </div>
-                  <strong className="text-md md:text-lg">{formatCurrency(results.netMonthlySalaryPortionAfterOverallTax)}</strong>
+                  <strong className="text-md md:text-lg block pl-7">{formatCurrency(results.netMonthlySalaryPortionAfterOverallTax)}</strong>
               </div>
               <Separator />
-              <div className="flex items-center justify-between">
+              <div className="space-y-1">
                   <div className="flex items-center">
                       <ArrowDownCircle className="mr-2 h-5 w-5 text-green-700 dark:text-green-500" />
                       <span>Total Yearly Net Income (Take Home):</span>
                   </div>
-                  <strong className="text-md md:text-lg text-green-700 dark:text-green-500">{formatCurrency(results.netAnnualIncome)}</strong>
+                  <strong className="text-md md:text-lg text-green-700 dark:text-green-500 block pl-7">{formatCurrency(results.netAnnualIncome)}</strong>
               </div>
           </CardContent>
         </Card>
