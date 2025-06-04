@@ -7,7 +7,7 @@ export interface TaxSlabDetail {
 }
 
 export interface TaxCalculationResult {
-  monthlyGrossSalary: number; // Added
+  monthlyGrossSalary: number;
   totalAnnualIncome: number;
   standardExemptionApplied: number;
   taxableIncome: number;
@@ -21,7 +21,7 @@ export interface TaxCalculationResult {
   taxSlabBreakdown: TaxSlabDetail[];
   netAnnualIncome: number;
   netMonthlyIncome: number;
-  netMonthlySalaryPortionAfterOverallTax: number; // Added
+  netMonthlySalaryPortionAfterOverallTax: number;
   incomeYear: string;
 }
 
@@ -37,39 +37,41 @@ const TAX_SLABS_2024_2025 = [
 
 // Tax slabs for general individual taxpayers (Based on provided image for Income Year 2025-2026 / Assessment Year 2026-2027)
 const TAX_SLABS_2025_2026 = [
-  { limit: 375000, rate: 0.00 },
-  { limit: 300000, rate: 0.10 },
-  { limit: 400000, rate: 0.15 },
-  { limit: 500000, rate: 0.20 },
-  { limit: 2000000, rate: 0.25 },
-  { limit: Infinity, rate: 0.30 },
+  { limit: 375000, rate: 0.00 }, // First 3.75 lakh
+  { limit: 300000, rate: 0.10 }, // Next 3 lakh
+  { limit: 400000, rate: 0.15 }, // Next 4 lakh
+  { limit: 500000, rate: 0.20 }, // Next 5 lakh
+  { limit: 2000000, rate: 0.25 }, // Next 20 lakh
+  { limit: Infinity, rate: 0.30 }, // Rest
 ];
 
 const getTaxSlabsForYear = (incomeYear: string) => {
   if (incomeYear === "2025-2026") {
     return TAX_SLABS_2025_2026;
   }
+  // Fallback for 2023-2024 and 2024-2025 to use 2024-2025 rules
   return TAX_SLABS_2024_2025;
 };
 
 
-const MINIMUM_TAX_THRESHOLD = 350000;
+const MINIMUM_TAX_THRESHOLD = 350000; // This might need adjustment based on the selected year's first slab.
 const MINIMUM_TAX_AMOUNT = 5000;
 
-const INVESTMENT_REBATE_RATE = 0.15;
-const MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME = 0.20;
-const MAX_INVESTMENT_ALLOWANCE_ABSOLUTE = 10000000;
+export const INVESTMENT_REBATE_RATE = 0.15;
+export const MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME = 0.20;
+export const MAX_INVESTMENT_ALLOWANCE_ABSOLUTE = 10000000; // 1 Crore BDT
 
-const STANDARD_EXEMPTION_ABSOLUTE_CAP = 450000;
-const STANDARD_EXEMPTION_INCOME_FRACTION = 1 / 3;
+export const STANDARD_EXEMPTION_ABSOLUTE_CAP = 450000;
+export const STANDARD_EXEMPTION_INCOME_FRACTION = 1 / 3;
 
 export function calculateBdTax(
-  monthlyGrossSalary: number,
+  monthlyGrossSalaryInput: number,
   annualBonuses: number,
   includeInvestments: boolean,
   totalAnnualInvestment: number,
   incomeYear: string
 ): TaxCalculationResult {
+  const monthlyGrossSalary = monthlyGrossSalaryInput || 0;
   const annualSalary = monthlyGrossSalary * 12;
   const totalAnnualIncome = annualSalary + (annualBonuses || 0);
 
@@ -141,7 +143,7 @@ export function calculateBdTax(
 
   if (includeInvestments && totalAnnualInvestment > 0 && taxableIncome > 0) {
       const actualEligibleInvestmentForRebateCalc = Math.min(totalAnnualInvestment, theoreticalAllowableInvestmentLimitForTip);
-      investmentAmountConsidered = totalAnnualInvestment;
+      investmentAmountConsidered = totalAnnualInvestment; // Use user's input for display
       taxRebate = actualEligibleInvestmentForRebateCalc * INVESTMENT_REBATE_RATE;
   }
 
@@ -149,22 +151,26 @@ export function calculateBdTax(
   const netTaxPayable = grossTax - taxRebate;
 
   let currentMinimumTaxThreshold = MINIMUM_TAX_THRESHOLD;
-  if (incomeYear === "2025-2026" && taxSlabsToUse[0]?.limit) {
+  // Adjust minimum tax threshold if the first slab limit of the selected year is different
+  if (taxSlabsToUse[0]?.limit && taxSlabsToUse[0].rate === 0.00) {
       currentMinimumTaxThreshold = taxSlabsToUse[0].limit;
   }
 
 
   let finalTaxDue = Math.max(0, netTaxPayable);
 
+  // Apply minimum tax rule: If taxable income is above the first slab (0% tax slab) and tax is payable, it shouldn't be less than BDT 5,000.
+  // However, if taxable income is below or equal to the first slab limit, tax is 0.
   if (taxableIncome > currentMinimumTaxThreshold && finalTaxDue > 0 && finalTaxDue < MINIMUM_TAX_AMOUNT) {
     finalTaxDue = MINIMUM_TAX_AMOUNT;
-  } else if (taxableIncome <= currentMinimumTaxThreshold && finalTaxDue <=0 ) {
+  } else if (taxableIncome <= currentMinimumTaxThreshold && finalTaxDue <=0 ) { // If income is within non-taxable limit
      finalTaxDue = 0;
   }
 
-  const monthlyTaxDeduction = finalTaxDue / 12;
+
+  const monthlyTaxDeduction = finalTaxDue > 0 ? finalTaxDue / 12 : 0;
   const netAnnualIncome = totalAnnualIncome - finalTaxDue;
-  const netMonthlyIncome = netAnnualIncome / 12;
+  const netMonthlyIncome = netAnnualIncome > 0 ? netAnnualIncome / 12 : totalAnnualIncome / 12; // if no tax, net monthly is gross monthly
   const netMonthlySalaryPortionAfterOverallTax = monthlyGrossSalary - monthlyTaxDeduction;
 
   return {
@@ -173,7 +179,7 @@ export function calculateBdTax(
     standardExemptionApplied,
     taxableIncome,
     grossTax,
-    investmentAmountConsidered,
+    investmentAmountConsidered, // This should be the user's input if provided, or the autofilled one
     allowableInvestmentLimit: theoreticalAllowableInvestmentLimitForTip,
     taxRebate,
     netTaxPayable,

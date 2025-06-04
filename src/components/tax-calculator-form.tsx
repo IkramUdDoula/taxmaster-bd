@@ -7,7 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { calculateBdTax, type TaxCalculationResult } from "@/lib/tax-helpers";
+import {
+  calculateBdTax,
+  type TaxCalculationResult,
+  STANDARD_EXEMPTION_ABSOLUTE_CAP,
+  STANDARD_EXEMPTION_INCOME_FRACTION,
+  MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME,
+  MAX_INVESTMENT_ALLOWANCE_ABSOLUTE
+} from "@/lib/tax-helpers";
 import { TaxResultsDisplay } from "./tax-results-display";
 import { Calculator, Gift, PiggyBank, WalletCards, AlertCircle, CalendarDays } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -19,10 +26,40 @@ export function TaxCalculatorForm() {
   const [bonuses, setBonuses] = useState("");
   const [includeInvestments, setIncludeInvestments] = useState(false);
   const [investmentAmount, setInvestmentAmount] = useState("");
-  const [incomeYear, setIncomeYear] = useState("2025-2026");
+  const [incomeYear, setIncomeYear] = useState("2025-2026"); // Default to 2025-2026
   const [taxResults, setTaxResults] = useState<TaxCalculationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const handleIncludeInvestmentsChange = (checked: boolean) => {
+    setIncludeInvestments(checked);
+    if (checked) {
+      const salaryNum = parseFloat(monthlySalary);
+      const bonusesNum = parseFloat(bonuses) || 0;
+
+      if (!isNaN(salaryNum) && salaryNum > 0) {
+        const annualSalary = salaryNum * 12;
+        const totalAnnualIncome = annualSalary + bonusesNum;
+
+        const exemptionBasedOnIncome = totalAnnualIncome * STANDARD_EXEMPTION_INCOME_FRACTION;
+        const standardExemptionApplied = Math.min(STANDARD_EXEMPTION_ABSOLUTE_CAP, exemptionBasedOnIncome);
+        const preliminaryTaxableIncome = Math.max(0, totalAnnualIncome - standardExemptionApplied);
+
+        if (preliminaryTaxableIncome > 0) {
+          const maxInvestmentByIncome = preliminaryTaxableIncome * MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME;
+          const preliminaryAllowableInvestment = Math.min(maxInvestmentByIncome, MAX_INVESTMENT_ALLOWANCE_ABSOLUTE);
+          setInvestmentAmount(preliminaryAllowableInvestment.toFixed(0));
+        } else {
+          setInvestmentAmount("0");
+        }
+      } else {
+        // If salary is not valid, prompt or set to 0
+        setInvestmentAmount("0"); 
+      }
+    } else {
+      setInvestmentAmount(""); // Clear investment amount if switch is off
+    }
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -104,7 +141,7 @@ export function TaxCalculatorForm() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground pt-1">
-                Note: Tax calculations use rules specific to the selected income year. 2023-2024 selection will use 2024-2025 rules as a fallback.
+                Note: Tax calculations use rules specific to the selected income year. For 2023-2024 & 2024-2025, rules for 2024-2025 are applied.
               </p>
             </div>
 
@@ -143,7 +180,7 @@ export function TaxCalculatorForm() {
               <Switch
                 id="includeInvestments"
                 checked={includeInvestments}
-                onCheckedChange={setIncludeInvestments}
+                onCheckedChange={handleIncludeInvestmentsChange}
               />
               <Label htmlFor="includeInvestments" className="flex items-center text-md cursor-pointer">
                 <PiggyBank className="mr-2 h-5 w-5 text-primary" />
@@ -181,4 +218,3 @@ export function TaxCalculatorForm() {
     </div>
   );
 }
-
