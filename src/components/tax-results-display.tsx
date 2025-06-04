@@ -69,12 +69,11 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <Wallet className="mr-2 h-5 w-5 text-green-700 dark:text-green-500" />
-                    <span>Suggested Monthly Net Income (Take Home):</span>
                 </div>
                 <strong className="text-md text-green-700 dark:text-green-500">{formatCurrency(results.netMonthlyIncome)}</strong>
             </div>
 
-            {results.taxableIncome > 0 && (
+            {results.taxableIncome > 0 && results.allowableInvestmentLimit > 0 && (
               <>
                 <Separator />
                 <div className="pt-4">
@@ -174,3 +173,4 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
     </div>
   );
 }
+
