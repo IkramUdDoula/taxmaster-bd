@@ -16,31 +16,6 @@ interface TaxResultsDisplayProps {
 export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
   return (
     <div className="space-y-6 mt-8">
-      <Card className="shadow-lg">
-        <CardHeader className="bg-primary/10 p-4 md:p-6">
-          <CardTitle className="flex items-center text-primary font-headline text-xl md:text-2xl">
-            <ClipboardList className="mr-2 h-6 w-6 text-primary" />
-            Tax Calculation Summary
-          </CardTitle>
-          <CardDescription>For Income Year: {results.incomeYear}</CardDescription>
-        </CardHeader>
-        <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <p><strong>Total Annual Gross Income:</strong> {formatCurrency(results.totalAnnualIncome)}</p>
-            <p><strong>Standard Exemption Applied:</strong> <span className="text-green-700 dark:text-green-500">-{formatCurrency(results.standardExemptionApplied)}</span></p>
-            <p><strong>Taxable Income:</strong> {formatCurrency(results.taxableIncome)}</p>
-            <p><strong>Gross Tax Liability:</strong> {formatCurrency(results.grossTax)}</p>
-            {results.investmentAmountConsidered > 0 && results.taxableIncome > 0 && (
-              <>
-                <p><strong>Investment Amount Considered (User Input):</strong> {formatCurrency(results.investmentAmountConsidered)}</p>
-                <p><strong>Tax Rebate:</strong> <span className="text-green-700 dark:text-green-500">-{formatCurrency(results.taxRebate)}</span></p>
-              </>
-            )}
-             <p><strong>Net Tax Payable (after rebate):</strong> {formatCurrency(results.netTaxPayable)}</p>
-          </div>
-        </CardContent>
-      </Card>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="shadow-lg">
           <CardHeader className="bg-green-600/10 dark:bg-green-400/10 p-4 md:p-6">
@@ -101,6 +76,39 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
           </CardContent>
         </Card>
       </div>
+
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="tax-summary" className="border-none">
+          <Card className="shadow-lg">
+            <AccordionTrigger className="w-full hover:no-underline">
+              <CardHeader className="bg-primary/10 p-4 md:p-6 w-full text-left">
+                <CardTitle className="flex items-center text-primary font-headline text-xl md:text-2xl">
+                  <ClipboardList className="mr-2 h-6 w-6 text-primary" />
+                  Tax Calculation Summary (Click to Expand)
+                </CardTitle>
+                <CardDescription>For Income Year: {results.incomeYear}</CardDescription>
+              </CardHeader>
+            </AccordionTrigger>
+            <AccordionContent>
+              <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <p><strong>Total Annual Gross Income:</strong> {formatCurrency(results.totalAnnualIncome)}</p>
+                  <p><strong>Standard Exemption Applied:</strong> <span className="text-green-700 dark:text-green-500">-{formatCurrency(results.standardExemptionApplied)}</span></p>
+                  <p><strong>Taxable Income:</strong> {formatCurrency(results.taxableIncome)}</p>
+                  <p><strong>Gross Tax Liability:</strong> {formatCurrency(results.grossTax)}</p>
+                  {results.investmentAmountConsidered > 0 && results.taxableIncome > 0 && (
+                    <>
+                      <p><strong>Investment Amount Considered (User Input):</strong> {formatCurrency(results.investmentAmountConsidered)}</p>
+                      <p><strong>Tax Rebate:</strong> <span className="text-green-700 dark:text-green-500">-{formatCurrency(results.taxRebate)}</span></p>
+                    </>
+                  )}
+                   <p><strong>Net Tax Payable (after rebate):</strong> {formatCurrency(results.netTaxPayable)}</p>
+                </div>
+              </CardContent>
+            </AccordionContent>
+          </Card>
+        </AccordionItem>
+      </Accordion>
       
       {results.taxableIncome > 0 && results.allowableInvestmentLimit > 0 && (
         <Card className="shadow-lg">
