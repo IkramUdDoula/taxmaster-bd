@@ -296,7 +296,7 @@ export function TaxCalculatorForm() {
           </form>
         </CardContent>
         <CardFooter className="text-xs text-muted-foreground p-4 md:p-6 border-t">
-            Disclaimer: This calculator provides an estimate for informational purposes only. Consult with a tax professional for accurate advice. Tax laws are subject to change. Copyright by Ikram (2025).
+            XXDisclaimer: This calculator provides an estimate for informational purposes only. Consult with a tax professional for accurate advice. Tax laws are subject to change. Copyright by Ikram (2025).
         </CardFooter>
       </Card>
 
