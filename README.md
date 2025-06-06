@@ -1,4 +1,4 @@
-# TaxMaster BDm
+# TaxMaster BD
 
 **TaxMaster BD** is a powerful and intuitive web application designed to generate accurate income tax reports based on salary inputs and local taxation rules of Bangladesh. Built for HR departments, accounting teams, and finance professionals, the platform streamlines the process of tax sheet generation with efficiency and precision.
 
@@ -23,10 +23,6 @@
 - HR departments managing monthly payroll
 - Finance officers preparing annual tax returns
 - Companies complying with Bangladesh NBR tax regulations
-
-## 📸 Screenshots
-
-_**(Insert screenshots or screen recordings here if available)**_
 
 ## 🚀 Getting Started (Development)
 
