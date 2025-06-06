@@ -1,24 +1,37 @@
-# Taxmaster - Tax Calculator App
+# TaxMaster BDm
 
-This is a NextJS starter in Firebase Studio.
+**TaxMaster BD** is a powerful and intuitive web application designed to generate accurate income tax reports based on salary inputs and local taxation rules of Bangladesh. Built for HR departments, accounting teams, and finance professionals, the platform streamlines the process of tax sheet generation with efficiency and precision.
 
-To get started, take a look at src/app/page.tsx.
+## 🧾 Features
 
-## App Description
+- 💼 Input detailed salary breakdowns
+- 📊 Generate income tax calculations instantly
+- 🗃️ Batch processing for multiple employees
+- 📥 Download tax sheets in printable format
+- 🔐 Secure data handling
+- 🌐 Country-specific logic (currently supports **Bangladesh**)
 
-This is a simple web application built with Next.js that calculates tax based on user input. It provides a user-friendly interface to enter relevant financial information and get an estimated tax liability.
+## 🛠 Tech Stack
 
-## Features
+- **Frontend**: Angular
+- **Backend**: Python (Flask/FastAPI)
+- **Deployment**: Google Cloud / Firebase
+- **Storage**: Secure file handling (TBD)
 
-- User-friendly interface for tax calculation.
-- Provides an estimated tax amount based on input.
+## 🧑‍💼 Use Case
 
-## Getting Started
+- HR departments managing monthly payroll
+- Finance officers preparing annual tax returns
+- Companies complying with Bangladesh NBR tax regulations
 
-To run this project locally, you'll need Node.js installed.
+## 📸 Screenshots
 
-1. Clone the repository.
-2. Navigate to the project directory in your terminal.
-3. Install dependencies: `npm install`
-4. Run the development server: `npm run dev`
-5. Open your browser to `http://localhost:3000` to see the app.
+_**(Insert screenshots or screen recordings here if available)**_
+
+## 🚀 Getting Started (Development)
+
+Clone the repo and run locally:
+
+```bash
+git clone https://github.com/your-username/taxmaster-bd.git
+cd taxmaster-bd
