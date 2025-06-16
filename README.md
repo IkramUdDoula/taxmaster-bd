@@ -1,6 +1,6 @@
 # TaxMaster BD
 
-A modern web application for calculating income tax in Bangladesh. Built with Next.js, TypeScript, and Tailwind CSS.
+A modern web application for calculating income tax in Bangladesh for the income year of 2024-2025 & 2025-2026. Built with Next.js, TypeScript, and Tailwind CSS.
 
 ## Features
 
