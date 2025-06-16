@@ -223,7 +223,7 @@ export function TaxCalculatorForm() {
                 <div className="space-y-2">
                   <Label htmlFor="bonuses" className="flex items-center text-md">
                     <Gift className="mr-2 h-5 w-5 text-primary" />
-                    Total Annual Bonuses/Other Income (BDT)
+                    Total Annual Bonuses/Other Income from Work (BDT)
                   </Label>
                   <Input
                     id="bonuses"

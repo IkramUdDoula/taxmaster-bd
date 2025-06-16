@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { TaxCalculationResult } from "@/lib/tax-helpers";
@@ -7,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ClipboardList, Landmark, TrendingDown, Briefcase, ArrowUpCircle, ArrowDownCircle, Info, Lightbulb, Wallet } from "lucide-react";
+import { ClipboardList, Landmark, TrendingDown, Briefcase, ArrowUpCircle, ArrowDownCircle, Info, Lightbulb, Wallet, Calculator } from "lucide-react";
 
 interface TaxResultsDisplayProps {
   results: TaxCalculationResult;
@@ -15,44 +14,35 @@ interface TaxResultsDisplayProps {
 
 export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
   return (
-    <div className="space-y-6 mt-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="shadow-lg">
-          <CardHeader className="bg-green-600/10 dark:bg-green-400/10 p-4 md:p-6">
-            <CardTitle className="flex items-center text-green-700 dark:text-green-400 font-headline text-lg md:text-xl">
-              <Briefcase className="mr-2 h-6 w-6" />
-              Income Overview
+    <div className="space-y-6 p-4 md:p-6">
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="glass-card hover-glow">
+          <CardHeader className="bg-accent/10 p-4 md:p-6">
+            <CardTitle className="flex items-center text-primary font-headline text-lg md:text-xl">
+              <Calculator className="mr-2 h-6 w-6 text-primary" />
+              Income Breakdown
             </CardTitle>
-            <CardDescription>Income Year: {results.incomeYear}</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base">
-              <div className="space-y-1">
-                  <div className="flex items-center">
-                      <ArrowUpCircle className="mr-2 h-5 w-5 text-foreground/80" />
-                      <span>Total Yearly Gross Income:</span>
-                  </div>
-                  <strong className="text-md md:text-lg block pl-7">{formatCurrency(results.totalAnnualIncome)}</strong>
+          <CardContent className="p-4 md:p-6 space-y-4">
+            <div className="space-y-1">
+              <div className="flex items-center">
+                <ArrowUpCircle className="mr-2 h-5 w-5 text-primary" />
+                <span>Gross Annual Income:</span>
               </div>
-              <Separator />
-               <div className="space-y-1">
-                  <div className="flex items-center">
-                      <Wallet className="mr-2 h-5 w-5 text-foreground/80" />
-                      <span>Net Monthly Salary (after tax deduction):</span>
-                  </div>
-                  <strong className="text-md md:text-lg block pl-7">{formatCurrency(results.netMonthlySalaryPortionAfterOverallTax)}</strong>
+              <strong className="text-md md:text-lg text-primary block pl-7">{formatCurrency(results.totalAnnualIncome)}</strong>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center">
+                <ArrowDownCircle className="mr-2 h-5 w-5 text-primary" />
+                <span>Total Yearly Net Income (Take Home):</span>
               </div>
-              <Separator />
-              <div className="space-y-1">
-                  <div className="flex items-center">
-                      <ArrowDownCircle className="mr-2 h-5 w-5 text-green-700 dark:text-green-500" />
-                      <span>Total Yearly Net Income (Take Home):</span>
-                  </div>
-                  <strong className="text-md md:text-lg text-green-700 dark:text-green-500 block pl-7">{formatCurrency(results.netAnnualIncome)}</strong>
-              </div>
+              <strong className="text-md md:text-lg text-primary block pl-7">{formatCurrency(results.netAnnualIncome)}</strong>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="glass-card hover-glow">
           <CardHeader className="bg-accent/10 p-4 md:p-6">
             <CardTitle className="flex items-center text-primary font-headline text-lg md:text-xl">
               <Landmark className="mr-2 h-6 w-6 text-primary" />
@@ -60,19 +50,19 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 md:p-6 text-center space-y-2">
-              <p className="text-base md:text-lg">
-                  <strong>Total Yearly Tax Due:</strong>
-              </p>
-              <p className="text-2xl md:text-3xl font-bold text-primary">
-                  {formatCurrency(results.finalTaxDue)}
-              </p>
-              <Separator className="my-4"/>
-              <p className="text-sm md:text-base">
-                  <strong>Suggested Monthly Tax Deduction (from Gross Salary):</strong>
-              </p>
-              <p className="text-xl md:text-2xl font-semibold text-accent">
-                  {formatCurrency(results.monthlyTaxDeduction)}
-              </p>
+            <p className="text-base md:text-lg">
+              <strong>Total Yearly Tax Due:</strong>
+            </p>
+            <p className="text-2xl md:text-3xl font-bold text-primary">
+              {formatCurrency(results.finalTaxDue)}
+            </p>
+            <Separator className="my-4"/>
+            <p className="text-sm md:text-base">
+              <strong>Suggested Monthly Tax Deduction (from Gross Salary):</strong>
+            </p>
+            <p className="text-xl md:text-2xl font-semibold text-accent">
+              {formatCurrency(results.monthlyTaxDeduction)}
+            </p>
           </CardContent>
         </Card>
       </div>
