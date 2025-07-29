@@ -72,7 +72,7 @@ This document outlines the income tax calculation rules for different fiscal yea
 - Basic exemption threshold: BDT 3,75,000
 - Standard exemption calculation:
   - One-third (1/3) of total income
-  - Maximum cap: BDT 4,50,000
+  - Maximum cap: BDT 5,00,000
   - The lower of the two is applied
 
 ### Investment Tax Credit

@@ -164,8 +164,8 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
             <Card className="shadow-lg">
               <AccordionTrigger className="w-full hover:no-underline">
                 <CardHeader className="bg-secondary/20 w-full p-4 md:p-6 text-left">
-                  <CardTitle className="flex items-center text-secondary-foreground font-headline text-lg md:text-xl">
-                    <TrendingDown className="mr-2 h-6 w-6 text-secondary-foreground" />
+                  <CardTitle className="flex items-center text-primary font-headline text-lg md:text-xl">
+                    <TrendingDown className="mr-2 h-6 w-6 text-primary" />
                     Tax Slab Breakdown (Click to Expand)
                   </CardTitle>
                 </CardHeader>

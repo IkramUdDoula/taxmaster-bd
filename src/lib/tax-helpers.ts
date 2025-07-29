@@ -6,6 +6,8 @@ export interface TaxSlabDetail {
   taxOnSlab: number;
 }
 
+export type TaxpayerCategory = "men" | "women" | "disabled" | "freedom_fighter";
+
 export interface TaxCalculationResult {
   monthlyGrossSalary: number;
   totalAnnualIncome: number;
@@ -53,14 +55,34 @@ const getTaxSlabsForYear = (incomeYear: string) => {
 };
 
 
-const MINIMUM_TAX_THRESHOLD_BASE = 350000; // Base, will be adjusted by first slab
+// Category-wise first slab limits derived from documentation
+const FIRST_SLAB_LIMIT: Record<string, Record<TaxpayerCategory, number>> = {
+  "2024-2025": {
+    men: 350000,
+    women: 400000,
+    disabled: 475000,
+    freedom_fighter: 500000,
+  },
+  "2025-2026": {
+    men: 375000,
+    women: 425000,
+    disabled: 500000,
+    freedom_fighter: 525000,
+  },
+};
+
+// Year-specific absolute caps for the standard exemption (1/3 income rule)
+export const STANDARD_EXEMPTION_CAP: Record<string, number> = {
+  "2024-2025": 450000,
+  "2025-2026": 500000,
+};
+
 const MINIMUM_TAX_AMOUNT = 5000;
 
 export const INVESTMENT_REBATE_RATE = 0.15;
 export const MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME = 0.20;
 export const MAX_INVESTMENT_ALLOWANCE_ABSOLUTE = 10000000; // 1 Crore BDT
 
-export const STANDARD_EXEMPTION_ABSOLUTE_CAP = 450000;
 export const STANDARD_EXEMPTION_INCOME_FRACTION = 1 / 3;
 
 export function calculateBdTax(
@@ -68,14 +90,16 @@ export function calculateBdTax(
   annualBonuses: number,
   includeInvestments: boolean,
   totalAnnualInvestment: number,
-  incomeYear: string
+  incomeYear: string,
+  category: TaxpayerCategory = "men"
 ): TaxCalculationResult {
   const monthlyGrossSalary = monthlyGrossSalaryInput || 0;
   const annualSalary = monthlyGrossSalary * 12;
   const totalAnnualIncome = annualSalary + (annualBonuses || 0);
 
+    const standardCap = STANDARD_EXEMPTION_CAP[incomeYear] ?? 450000;
   let exemptionBasedOnIncome = totalAnnualIncome * STANDARD_EXEMPTION_INCOME_FRACTION;
-  let standardExemptionApplied = Math.min(STANDARD_EXEMPTION_ABSOLUTE_CAP, exemptionBasedOnIncome);
+  let standardExemptionApplied = Math.min(standardCap, exemptionBasedOnIncome);
   standardExemptionApplied = Math.ceil(standardExemptionApplied);
 
   const taxableIncome = Math.max(0, totalAnnualIncome - standardExemptionApplied);
@@ -85,7 +109,15 @@ export function calculateBdTax(
   const taxSlabBreakdown: TaxSlabDetail[] = [];
   let cumulativeSlabLimit = 0;
 
-  const taxSlabsToUse = getTaxSlabsForYear(incomeYear);
+  let taxSlabsToUse = [...getTaxSlabsForYear(incomeYear)]; // clone so we can mutate safely
+
+  // Override first slab limit based on taxpayer category where 0% rate applies
+  if (taxSlabsToUse.length && taxSlabsToUse[0].rate === 0) {
+    const customFirstLimit = FIRST_SLAB_LIMIT[incomeYear]?.[category];
+    if (customFirstLimit) {
+      taxSlabsToUse[0] = { ...taxSlabsToUse[0], limit: customFirstLimit };
+    }
+  }
 
 
   for (const slab of taxSlabsToUse) {
@@ -151,10 +183,8 @@ export function calculateBdTax(
   const netTaxPayable = Math.max(0, grossTax - taxRebate);
 
 
-  let currentMinimumTaxThreshold = MINIMUM_TAX_THRESHOLD_BASE;
-  if (taxSlabsToUse[0]?.limit && taxSlabsToUse[0].rate === 0.00) {
-      currentMinimumTaxThreshold = taxSlabsToUse[0].limit;
-  }
+    // Minimum-tax threshold equals the customised first-slab limit (0% rate)
+  const currentMinimumTaxThreshold = taxSlabsToUse[0]?.rate === 0 ? taxSlabsToUse[0].limit : 0;
 
   let finalTaxDue = netTaxPayable;
 

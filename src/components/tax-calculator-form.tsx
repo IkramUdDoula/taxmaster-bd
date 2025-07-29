@@ -11,13 +11,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   calculateBdTax,
   type TaxCalculationResult,
-  STANDARD_EXEMPTION_ABSOLUTE_CAP,
+  TaxpayerCategory,
+  STANDARD_EXEMPTION_CAP,
   STANDARD_EXEMPTION_INCOME_FRACTION,
   MAX_INVESTMENT_ALLOWANCE_PERCENTAGE_OF_TAXABLE_INCOME,
   MAX_INVESTMENT_ALLOWANCE_ABSOLUTE
 } from "@/lib/tax-helpers";
 import { TaxResultsDisplay } from "./tax-results-display";
-import { Calculator, Gift, PiggyBank, WalletCards, AlertCircle, CalendarDays, Landmark } from "lucide-react";
+import { Calculator, Gift, PiggyBank, WalletCards, AlertCircle, CalendarDays, Landmark, User } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -32,6 +33,7 @@ export function TaxCalculatorForm() {
   const [investmentAmount, setInvestmentAmount] = useState("");
   const [incomeYear, setIncomeYear] = useState("2025-2026");
   const [taxResults, setTaxResults] = useState<TaxCalculationResult | null>(null);
+  const [taxpayerCategory, setTaxpayerCategory] = useState<TaxpayerCategory>("men");
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -58,7 +60,8 @@ export function TaxCalculatorForm() {
 
       if (salaryForInvestmentCalcIsValid) {
         const exemptionBasedOnIncome = annualIncomeForInvestmentCalc * STANDARD_EXEMPTION_INCOME_FRACTION;
-        const standardExemptionApplied = Math.min(STANDARD_EXEMPTION_ABSOLUTE_CAP, exemptionBasedOnIncome);
+        const cap = STANDARD_EXEMPTION_CAP[incomeYear] ?? 450000;
+        const standardExemptionApplied = Math.min(cap, exemptionBasedOnIncome);
         const preliminaryTaxableIncome = Math.max(0, annualIncomeForInvestmentCalc - standardExemptionApplied);
 
         if (preliminaryTaxableIncome > 0) {
@@ -124,7 +127,14 @@ export function TaxCalculatorForm() {
     }
 
     try {
-      const results = calculateBdTax(salaryNum, bonusesNum, includeInvestments, investmentNum, incomeYear);
+      const results = calculateBdTax(
+        salaryNum,
+        bonusesNum,
+        includeInvestments,
+        investmentNum,
+        incomeYear,
+        taxpayerCategory
+      );
       setTaxResults(results);
       toast({
         title: "Calculation Successful!",
@@ -175,6 +185,32 @@ export function TaxCalculatorForm() {
               <p className="text-xs text-muted-foreground pt-1">
                  Note: Tax calculations use rules specific to the selected income year.
               </p>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-md">Select Taxpayer Category</Label>
+              <RadioGroup
+                value={taxpayerCategory}
+                onValueChange={(value: TaxpayerCategory) => setTaxpayerCategory(value)}
+                className="flex flex-col sm:flex-row gap-2 sm:gap-4"
+              >
+                <div className="flex items-center space-x-2 p-3 border rounded-md flex-1 bg-muted/20 hover:bg-muted/40 cursor-pointer">
+                  <RadioGroupItem value="men" id="cat1" />
+                  <Label htmlFor="cat1" className="cursor-pointer text-sm sm:text-md">Men</Label>
+                </div>
+                <div className="flex items-center space-x-2 p-3 border rounded-md flex-1 bg-muted/20 hover:bg-muted/40 cursor-pointer">
+                  <RadioGroupItem value="women" id="cat2" />
+                  <Label htmlFor="cat2" className="cursor-pointer text-sm sm:text-md">Women</Label>
+                </div>
+                <div className="flex items-center space-x-2 p-3 border rounded-md flex-1 bg-muted/20 hover:bg-muted/40 cursor-pointer">
+                  <RadioGroupItem value="disabled" id="cat3" />
+                  <Label htmlFor="cat3" className="cursor-pointer text-sm sm:text-md">Disabled / Third Gender</Label>
+                </div>
+                <div className="flex items-center space-x-2 p-3 border rounded-md flex-1 bg-muted/20 hover:bg-muted/40 cursor-pointer">
+                  <RadioGroupItem value="freedom_fighter" id="cat4" />
+                  <Label htmlFor="cat4" className="cursor-pointer text-sm sm:text-md">Freedom Fighter</Label>
+                </div>
+              </RadioGroup>
             </div>
 
             <div className="space-y-3">
