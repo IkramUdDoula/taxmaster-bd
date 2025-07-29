@@ -3,6 +3,7 @@
 import type { TaxCalculationResult } from "@/lib/tax-helpers";
 import { formatCurrency } from "@/lib/tax-helpers";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { EffectiveTaxRatePopup } from "@/components/effective-tax-rate-popup";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -13,66 +14,89 @@ interface TaxResultsDisplayProps {
 }
 
 export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
+  const savingsFromInvestment = results.taxRebate;
+  const effectiveTaxRate = ((results.finalTaxDue / results.totalAnnualIncome) * 100).toFixed(2);
+  
   return (
-    <div className="space-y-6 p-4 md:p-6">
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="glass-card hover-glow">
-          <CardHeader className="bg-accent/10 p-4 md:p-6">
-            <CardTitle className="flex items-center text-primary font-headline text-lg md:text-xl">
-              <Calculator className="mr-2 h-6 w-6 text-primary" />
-              Income Breakdown
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 md:p-6 space-y-4">
-            <div className="space-y-1">
-              <div className="flex items-center">
-                <ArrowUpCircle className="mr-2 h-5 w-5 text-primary" />
-                <span>Gross Annual Income:</span>
+    <div className="space-y-6 p-4 md:p-6 animate-fade-in">
+      {/* Key Metrics Dashboard */}
+      <div className="flex flex-col gap-4 mb-8">
+        <Card className="gradient-success text-white overflow-hidden relative">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-white/80 text-sm font-medium">Annual Take-Home</p>
+                <p className="text-2xl font-bold">BDT {formatCurrency(results.netAnnualIncome, false)}</p>
               </div>
-              <strong className="text-md md:text-lg text-primary block pl-7">{formatCurrency(results.totalAnnualIncome)}</strong>
-            </div>
-
-            <div className="space-y-1">
-              <div className="flex items-center">
-                <ArrowDownCircle className="mr-2 h-5 w-5 text-primary" />
-                <span>Total Yearly Net Income (Take Home):</span>
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <Wallet className="w-6 h-6 text-white" />
               </div>
-              <strong className="text-md md:text-lg text-primary block pl-7">{formatCurrency(results.netAnnualIncome)}</strong>
             </div>
+            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full" />
           </CardContent>
         </Card>
 
-        <Card className="glass-card hover-glow">
-          <CardHeader className="bg-accent/10 p-4 md:p-6">
-            <CardTitle className="flex items-center text-primary font-headline text-lg md:text-xl">
-              <Landmark className="mr-2 h-6 w-6 text-primary" />
-              Final Tax &amp; Monthly Deduction
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 md:p-6 text-center space-y-2">
-            <p className="text-base md:text-lg">
-              <strong>Total Yearly Tax Due:</strong>
-            </p>
-            <p className="text-2xl md:text-3xl font-bold text-primary">
-              {formatCurrency(results.finalTaxDue)}
-            </p>
-            <Separator className="my-4"/>
-            <p className="text-sm md:text-base">
-              <strong>Suggested Monthly Tax Deduction (from Gross Salary):</strong>
-            </p>
-            <p className="text-xl md:text-2xl font-semibold text-accent">
-              {formatCurrency(results.monthlyTaxDeduction)}
-            </p>
+        <Card className="gradient-warning text-white overflow-hidden relative">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-white/80 text-sm font-medium">Total Tax Due</p>
+                <p className="text-2xl font-bold">BDT {formatCurrency(results.finalTaxDue, false)}</p>
+              </div>
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <Calculator className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full" />
+          </CardContent>
+        </Card>
+
+        <EffectiveTaxRatePopup
+  incomeYear={results.incomeYear}
+  taxpayerCategory={"men"}
+  userGrossIncome={results.totalAnnualIncome}
+  trigger={
+    <Card className="gradient-info text-white overflow-hidden relative cursor-pointer hover:scale-[1.02] transition-transform">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-white/80 text-sm font-medium">Effective Tax Rate</p>
+            <p className="text-2xl font-bold">{effectiveTaxRate}%</p>
+          </div>
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+            <TrendingDown className="w-6 h-6 text-white" />
+          </div>
+        </div>
+        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full" />
+      </CardContent>
+    </Card>
+  }
+/>
+
+        <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white overflow-hidden relative">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-white/80 text-sm font-medium">Suggested Monthly Tax Deduction (from Gross Salary)</p>
+                <p className="text-2xl font-bold">BDT {formatCurrency(results.monthlyTaxDeduction, false)}</p>
+              </div>
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <ArrowDownCircle className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full" />
           </CardContent>
         </Card>
       </div>
+
+
 
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="tax-summary" className="border-none">
           <Card className="shadow-lg">
             <AccordionTrigger className="w-full hover:no-underline">
               <CardHeader className="bg-primary/10 p-4 md:p-6 w-full text-left">
-                <CardTitle className="flex items-center text-primary font-headline text-xl md:text-2xl">
+                <CardTitle className="flex items-center text-primary font-headline text-lg md:text-xl">
                   <ClipboardList className="mr-2 h-6 w-6 text-primary" />
                   Tax Calculation Summary (Click to Expand)
                 </CardTitle>
@@ -81,18 +105,43 @@ export function TaxResultsDisplay({ results }: TaxResultsDisplayProps) {
             </AccordionTrigger>
             <AccordionContent>
               <CardContent className="p-4 md:p-6 space-y-4 text-sm md:text-base">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <p><strong>Total Annual Gross Income:</strong> {formatCurrency(results.totalAnnualIncome)}</p>
-                  <p><strong>Standard Exemption Applied:</strong> <span className="text-green-700 dark:text-green-500">-{formatCurrency(results.standardExemptionApplied)}</span></p>
-                  <p><strong>Taxable Income:</strong> {formatCurrency(results.taxableIncome)}</p>
-                  <p><strong>Gross Tax Liability:</strong> {formatCurrency(results.grossTax)}</p>
-                  {results.investmentAmountConsidered > 0 && results.taxableIncome > 0 && (
-                    <>
-                      <p><strong>Investment Amount Considered (User Input):</strong> {formatCurrency(results.investmentAmountConsidered)}</p>
-                      <p><strong>Tax Rebate:</strong> <span className="text-green-700 dark:text-green-500">-{formatCurrency(results.taxRebate)}</span></p>
-                    </>
-                  )}
-                   <p><strong>Net Tax Payable (after rebate):</strong> {formatCurrency(results.netTaxPayable)}</p>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm md:text-base border-collapse">
+                    <tbody>
+                      <tr>
+                        <td className="font-medium py-2 pr-4">Total Annual Gross Income:</td>
+                        <td className="py-2 pl-2 text-right">{formatCurrency(results.totalAnnualIncome)}</td>
+                      </tr>
+                      <tr>
+                        <td className="font-medium py-2 pr-4">Standard Exemption Applied:</td>
+                        <td className="py-2 pl-2 text-green-700 dark:text-green-500 text-right">-{formatCurrency(results.standardExemptionApplied)}</td>
+                      </tr>
+                      <tr>
+                        <td className="font-medium py-2 pr-4">Taxable Income:</td>
+                        <td className="py-2 pl-2 text-right">{formatCurrency(results.taxableIncome)}</td>
+                      </tr>
+                      <tr>
+                        <td className="font-medium py-2 pr-4">Gross Tax Liability:</td>
+                        <td className="py-2 pl-2 text-right">{formatCurrency(results.grossTax)}</td>
+                      </tr>
+                      {results.investmentAmountConsidered > 0 && results.taxableIncome > 0 && (
+                        <>
+                          <tr>
+                            <td className="font-medium py-2 pr-4">Investment Amount Considered (User Input):</td>
+                            <td className="py-2 pl-2 text-right">{formatCurrency(results.investmentAmountConsidered)}</td>
+                          </tr>
+                          <tr>
+                            <td className="font-medium py-2 pr-4">Tax Rebate:</td>
+                            <td className="py-2 pl-2 text-green-700 dark:text-green-500 text-right">-{formatCurrency(results.taxRebate)}</td>
+                          </tr>
+                        </>
+                      )}
+                      <tr>
+                        <td className="font-medium py-2 pr-4">Net Tax Payable (after rebate):</td>
+                        <td className="py-2 pl-2 text-primary font-bold text-right">{formatCurrency(results.netTaxPayable)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </CardContent>
             </AccordionContent>
