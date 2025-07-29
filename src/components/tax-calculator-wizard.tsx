@@ -487,8 +487,7 @@ export function TaxCalculatorWizard() {
             Taxmaster
           </CardTitle>
           <CardDescription className="text-white/90 text-lg md:text-xl text-center">
-            Calculate your taxes, before negotiating your salary
-          </CardDescription>
+          Your tax planning doesn't have to be stressful.          </CardDescription>
         </CardHeader>
         
         <CardContent className="p-6 md:p-8">
