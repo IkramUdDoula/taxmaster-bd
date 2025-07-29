@@ -40,6 +40,7 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
           <Toaster />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
