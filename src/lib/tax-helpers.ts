@@ -30,8 +30,8 @@ export interface TaxCalculationResult {
 const TAX_SLABS_2024_2025 = [
   { limit: 350000, rate: 0.00 },
   { limit: 100000, rate: 0.05 },
-  { limit: 300000, rate: 0.10 },
-  { limit: 400000, rate: 0.15 },
+  { limit: 400000, rate: 0.10 },
+  { limit: 500000, rate: 0.15 },
   { limit: 500000, rate: 0.20 },
   { limit: Infinity, rate: 0.25 },
 ];
