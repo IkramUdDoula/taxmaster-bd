@@ -199,18 +199,10 @@ export function TaxCalculatorWizard() {
       case 1:
         return (
           <div className="space-y-8 animate-slide-in">
-            <div className="text-center space-y-4">
-              <div className="w-20 h-20 mx-auto bg-gradient-primary rounded-full flex items-center justify-center">
-                <User className="w-10 h-10 text-primary" />
-              </div>
-              <h2 className="text-2xl font-bold text-foreground">Let's Get Started</h2>
-              <p className="text-muted-foreground">Tell us about yourself and the tax year</p>
-            </div>
-
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div className="space-y-4">
-                <Label className="flex items-center text-lg font-semibold">
-                  <CalendarDays className="mr-2 h-5 w-5 text-primary" />
+                <Label className="flex items-center text-xl font-semibold tracking-tight">
+                  <CalendarDays className="mr-3 h-6 w-6 text-primary" />
                   Income Year
                 </Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -222,55 +214,69 @@ export function TaxCalculatorWizard() {
                       key={year.value}
                       onClick={() => setIncomeYear(year.value)}
                       className={cn(
-                        "flex flex-col items-center space-y-2 p-6 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted/50",
+                        "group flex flex-col items-center space-y-3 p-6 border-2 rounded-xl cursor-pointer smooth-transition hover:scale-[1.02]",
                         incomeYear === year.value 
-                          ? "border-primary bg-primary/10 ring-2 ring-primary/20" 
-                          : "border-muted-foreground/20"
+                          ? "border-primary bg-primary/10 shadow-glow" 
+                          : "border-border bg-card/50 hover:border-primary/50"
                       )}
                     >
-                      <CalendarDays className="w-8 h-8 text-primary" />
-                      <span className="font-semibold text-lg">{year.label}</span>
+                      <CalendarDays className={cn(
+                        "w-10 h-10 smooth-transition",
+                        incomeYear === year.value ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                      )} />
+                      <span className="font-semibold text-xl tracking-tight">{year.label}</span>
                       <span className="text-sm text-muted-foreground text-center">{year.description}</span>
-                      
                     </div>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-4">
-                <Label className="text-lg font-semibold">Taxpayer Category</Label>
+                <Label className="text-xl font-semibold tracking-tight">Taxpayer Category</Label>
                 <RadioGroup
                   value={taxpayerCategory}
                   onValueChange={(value: TaxpayerCategory) => setTaxpayerCategory(value)}
                   className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                 >
                   {[
-                    { value: "men", label: "Men", icon: "👨" },
-                    { value: "women", label: "Women", icon: "👩" },
-                    { value: "disabled", label: "Disabled / Third Gender", icon: "♿" },
-                    { value: "freedom_fighter", label: "Freedom Fighter", icon: "🏅" },
-                  ].map((category) => (
-                    <div key={category.value} className="relative">
-                      <RadioGroupItem 
-                        value={category.value} 
-                        id={category.value} 
-                        className="sr-only" 
-                      />
-                      <Label
-                        htmlFor={category.value}
-                        className={cn(
-                          "flex items-center space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted/50",
-                          taxpayerCategory === category.value 
-                            ? "border-primary bg-primary/10 ring-2 ring-primary/20" 
-                            : "border-muted-foreground/20"
-                        )}
-                      >
-                        <span className="text-2xl">{category.icon}</span>
-                        <span className="font-medium">{category.label}</span>
-                        
-                      </Label>
-                    </div>
-                  ))}
+                    { value: "men", label: "Men", icon: User },
+                    { value: "women", label: "Women", icon: User },
+                    { value: "disabled", label: "Disabled / Third Gender", icon: User },
+                    { value: "freedom_fighter", label: "Freedom Fighter", icon: User },
+                  ].map((category) => {
+                    const IconComponent = category.icon;
+                    return (
+                      <div key={category.value} className="relative">
+                        <RadioGroupItem 
+                          value={category.value} 
+                          id={category.value} 
+                          className="sr-only" 
+                        />
+                        <Label
+                          htmlFor={category.value}
+                          className={cn(
+                            "group flex items-center space-x-4 p-5 border-2 rounded-xl cursor-pointer smooth-transition hover:scale-[1.02]",
+                            taxpayerCategory === category.value 
+                              ? "border-primary bg-primary/10 shadow-glow" 
+                              : "border-border bg-card/50 hover:border-primary/50"
+                          )}
+                        >
+                          <div className={cn(
+                            "w-10 h-10 rounded-lg flex items-center justify-center smooth-transition",
+                            taxpayerCategory === category.value 
+                              ? "bg-primary/20" 
+                              : "bg-muted group-hover:bg-primary/10"
+                          )}>
+                            <IconComponent className={cn(
+                              "w-5 h-5 smooth-transition",
+                              taxpayerCategory === category.value ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                            )} />
+                          </div>
+                          <span className="font-medium text-base">{category.label}</span>
+                        </Label>
+                      </div>
+                    );
+                  })}
                 </RadioGroup>
               </div>
             </div>
@@ -280,17 +286,9 @@ export function TaxCalculatorWizard() {
       case 2:
         return (
           <div className="space-y-8 animate-slide-in">
-            <div className="text-center space-y-4">
-              <div className="w-20 h-20 mx-auto bg-gradient-success rounded-full flex items-center justify-center">
-                <WalletCards className="w-10 h-10 text-primary" />
-              </div>
-              <h2 className="text-2xl font-bold text-foreground">Income Details</h2>
-              <p className="text-muted-foreground">How would you like to enter your income information?</p>
-            </div>
-
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div className="space-y-4">
-                <Label className="text-lg font-semibold">Income Entry Method</Label>
+                <Label className="text-xl font-semibold tracking-tight">Income Entry Method</Label>
                 <RadioGroup
                   value={incomeInputMode}
                   onValueChange={(value: "monthly" | "annual") => setIncomeInputMode(value)}
@@ -301,14 +299,17 @@ export function TaxCalculatorWizard() {
                     <Label
                       htmlFor="monthly"
                       className={cn(
-                        "flex flex-col items-center space-y-2 p-6 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted/50",
+                        "group flex flex-col items-center space-y-3 p-6 border-2 rounded-xl cursor-pointer smooth-transition hover:scale-[1.02]",
                         incomeInputMode === "monthly" 
-                          ? "border-primary bg-primary/10 ring-2 ring-primary/20" 
-                          : "border-muted-foreground/20"
+                          ? "border-primary bg-primary/10 shadow-glow" 
+                          : "border-border bg-card/50 hover:border-primary/50"
                       )}
                     >
-                      <WalletCards className="w-8 h-8 text-primary" />
-                      <span className="font-medium">Monthly Salary + Bonuses</span>
+                      <WalletCards className={cn(
+                        "w-10 h-10 smooth-transition",
+                        incomeInputMode === "monthly" ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                      )} />
+                      <span className="font-medium text-base text-center">Monthly Salary + Bonuses</span>
                     </Label>
                   </div>
                   <div className="relative">
@@ -316,14 +317,17 @@ export function TaxCalculatorWizard() {
                     <Label
                       htmlFor="annual"
                       className={cn(
-                        "flex flex-col items-center space-y-2 p-6 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted/50",
+                        "group flex flex-col items-center space-y-3 p-6 border-2 rounded-xl cursor-pointer smooth-transition hover:scale-[1.02]",
                         incomeInputMode === "annual" 
-                          ? "border-primary bg-primary/10 ring-2 ring-primary/20" 
-                          : "border-muted-foreground/20"
+                          ? "border-primary bg-primary/10 shadow-glow" 
+                          : "border-border bg-card/50 hover:border-primary/50"
                       )}
                     >
-                      <Landmark className="w-8 h-8 text-primary" />
-                      <span className="font-medium">Total Annual Gross Income</span>
+                      <Landmark className={cn(
+                        "w-10 h-10 smooth-transition",
+                        incomeInputMode === "annual" ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                      )} />
+                      <span className="font-medium text-base text-center">Total Annual Gross Income</span>
                     </Label>
                   </div>
                 </RadioGroup>
@@ -332,7 +336,7 @@ export function TaxCalculatorWizard() {
               {incomeInputMode === "monthly" && (
                 <div className="space-y-6 animate-fade-in">
                   <div className="space-y-3">
-                    <Label htmlFor="monthlySalary" className="text-lg font-semibold">
+                    <Label htmlFor="monthlySalary" className="text-lg font-semibold tracking-tight">
                       Monthly Gross Salary (BDT)
                     </Label>
                     <Input
@@ -341,12 +345,12 @@ export function TaxCalculatorWizard() {
                       value={monthlySalary}
                       onChange={(e) => setMonthlySalary(e.target.value)}
                       placeholder="e.g., 50,000"
-                      className="h-12 text-base"
+                      className="h-14 text-base border-2 smooth-transition focus:shadow-glow"
                     />
                   </div>
 
                   <div className="space-y-3">
-                    <Label htmlFor="bonuses" className="text-lg font-semibold">
+                    <Label htmlFor="bonuses" className="text-lg font-semibold tracking-tight">
                       Annual Bonuses/Other Income (BDT)
                     </Label>
                     <Input
@@ -355,9 +359,9 @@ export function TaxCalculatorWizard() {
                       value={bonuses}
                       onChange={(e) => setBonuses(e.target.value)}
                       placeholder="e.g., 100,000 (optional)"
-                      className="h-12 text-base"
+                      className="h-14 text-base border-2 smooth-transition focus:shadow-glow"
                     />
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       Include festival bonuses, overtime, and other work-related income
                     </p>
                   </div>
@@ -366,7 +370,7 @@ export function TaxCalculatorWizard() {
 
               {incomeInputMode === "annual" && (
                 <div className="space-y-3 animate-fade-in">
-                  <Label htmlFor="totalAnnualGrossIncome" className="text-lg font-semibold">
+                  <Label htmlFor="totalAnnualGrossIncome" className="text-lg font-semibold tracking-tight">
                     Total Annual Gross Income (BDT)
                   </Label>
                   <Input
@@ -375,9 +379,9 @@ export function TaxCalculatorWizard() {
                     value={totalAnnualGrossIncome}
                     onChange={(e) => setTotalAnnualGrossIncome(e.target.value)}
                     placeholder="e.g., 700,000"
-                    className="h-12 text-base"
+                    className="h-14 text-base border-2 smooth-transition focus:shadow-glow"
                   />
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Include salary, bonuses, and all other taxable earnings for the year
                   </p>
                 </div>
@@ -389,19 +393,11 @@ export function TaxCalculatorWizard() {
       case 3:
         return (
           <div className="space-y-8 animate-slide-in">
-            <div className="text-center space-y-4">
-              <div className="w-20 h-20 mx-auto bg-gradient-info rounded-full flex items-center justify-center">
-                <PiggyBank className="w-10 h-10 text-primary" />
-              </div>
-              <h2 className="text-2xl font-bold text-foreground">Investment & Savings</h2>
-              <p className="text-muted-foreground">Maximize your tax savings with eligible investments</p>
-            </div>
-
-            <div className="space-y-6">
-              <div className="flex items-center justify-between p-6 border rounded-lg bg-muted/30">
-                <div className="space-y-1">
-                  <Label className="text-lg font-semibold">Include Investment Tax Rebate</Label>
-                  <p className="text-sm text-muted-foreground">
+            <div className="space-y-8">
+              <div className="flex items-center justify-between p-6 border-2 rounded-xl bg-card/50 border-border smooth-transition hover:border-primary/50">
+                <div className="space-y-2">
+                  <Label className="text-lg font-semibold tracking-tight">Include Investment Tax Rebate</Label>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Get 15% tax rebate on eligible investments up to 20% of taxable income
                   </p>
                 </div>
@@ -415,7 +411,7 @@ export function TaxCalculatorWizard() {
               {includeInvestments && (
                 <div className="space-y-6 animate-fade-in">
                   <div className="space-y-3">
-                    <Label htmlFor="investmentAmount" className="text-lg font-semibold">
+                    <Label htmlFor="investmentAmount" className="text-lg font-semibold tracking-tight">
                       Total Annual Investment Amount (BDT)
                     </Label>
                     <Input
@@ -424,22 +420,34 @@ export function TaxCalculatorWizard() {
                       value={investmentAmount}
                       onChange={(e) => setInvestmentAmount(e.target.value)}
                       placeholder="e.g., 200,000"
-                      className="h-12 text-base"
+                      className="h-14 text-base border-2 smooth-transition focus:shadow-glow"
                     />
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       The calculator will automatically cap this at the allowable limit
                     </p>
                   </div>
 
-                  <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                      Eligible Investment Options:
+                  <div className="p-6 bg-blue-500/10 rounded-xl border-2 border-blue-500/20 smooth-transition hover:border-blue-500/40">
+                    <h4 className="font-semibold text-blue-400 mb-3 text-base tracking-tight">
+                      Eligible Investment Options
                     </h4>
-                    <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                      <li>• Listed company shares (no upper limit)</li>
-                      <li>• Mutual funds/debentures (max 5 lakh)</li>
-                      <li>• DPS schemes (max 1.2 lakh)</li>
-                      <li>• Government securities (max 5 lakh)</li>
+                    <ul className="text-sm text-blue-300/90 space-y-2 leading-relaxed">
+                      <li className="flex items-start">
+                        <span className="mr-2 text-blue-400">•</span>
+                        <span>Listed company shares (no upper limit)</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="mr-2 text-blue-400">•</span>
+                        <span>Mutual funds/debentures (max 5 lakh)</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="mr-2 text-blue-400">•</span>
+                        <span>DPS schemes (max 1.2 lakh)</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="mr-2 text-blue-400">•</span>
+                        <span>Government securities (max 5 lakh)</span>
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -453,22 +461,14 @@ export function TaxCalculatorWizard() {
           <div className="space-y-8 animate-slide-in">
             {taxResults ? (
               <div className="space-y-6">
-                <div className="text-center space-y-4">
-                  <div className="w-20 h-20 mx-auto bg-gradient-primary rounded-full flex items-center justify-center animate-bounce-custom">
-                    <Sparkles className="w-10 h-10 text-primary" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-foreground">Tax Calculation Complete!</h2>
-                  <p className="text-muted-foreground">Here's your detailed tax breakdown</p>
-                </div>
                 <TaxResultsDisplay results={taxResults} />
               </div>
             ) : (
-              <div className="text-center space-y-4">
-                <div className="w-20 h-20 mx-auto bg-gradient-warning rounded-full flex items-center justify-center">
+              <div className="text-center space-y-4 py-12">
+                <div className="w-20 h-20 mx-auto gradient-warning rounded-2xl flex items-center justify-center shadow-glow animate-float">
                   <Calculator className="w-10 h-10 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-foreground">Ready to Calculate</h2>
-                <p className="text-muted-foreground">Click the button below to calculate your taxes</p>
+                <p className="text-muted-foreground text-lg">Click the button below to calculate your taxes</p>
               </div>
             )}
           </div>
@@ -480,24 +480,16 @@ export function TaxCalculatorWizard() {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-4xl">
-      <Card className="shadow-2xl overflow-hidden">
-        <CardHeader className="gradient-primary text-white py-8 md:py-12">
-          <CardTitle className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
-            Taxmaster
-          </CardTitle>
-          <CardDescription className="text-white/90 text-lg md:text-xl text-center">
-          Your tax planning doesn't have to be stressful.          </CardDescription>
-        </CardHeader>
-        
-        <CardContent className="p-6 md:p-8">
-          <StepWizard steps={STEPS} currentStep={currentStep} className="mb-8" />
+    <div className="container mx-auto p-4 md:p-8 max-w-5xl">
+      <Card className="shadow-2xl overflow-hidden border-2 border-border/50 backdrop-blur-sm bg-card/95 smooth-transition hover:shadow-glow-lg">
+        <CardContent className="p-6 md:p-10">
+          <StepWizard steps={STEPS} currentStep={currentStep} className="mb-10" />
           
           {error && (
-            <Alert variant="destructive" className="mb-6 animate-slide-in">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
+            <Alert variant="destructive" className="mb-6 animate-slide-in border-2">
+              <AlertCircle className="h-5 w-5" />
+              <AlertTitle className="text-base font-semibold">Error</AlertTitle>
+              <AlertDescription className="text-sm">{error}</AlertDescription>
             </Alert>
           )}
 
@@ -505,15 +497,15 @@ export function TaxCalculatorWizard() {
             {renderStepContent()}
           </div>
 
-          <div className="flex justify-between items-center mt-8 pt-6 border-t">
+          <div className="flex justify-between items-center mt-10 pt-8 border-t-2 border-border">
             <Button
               variant="outline"
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 h-12 px-6 border-2 smooth-transition hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Previous</span>
+              <span className="font-medium">Previous</span>
             </Button>
 
             <div className="flex space-x-3">
@@ -521,9 +513,9 @@ export function TaxCalculatorWizard() {
                 <Button
                   onClick={handleNext}
                   disabled={!canProceedToNext()}
-                  className="flex items-center space-x-2 gradient-primary text-white"
+                  className="flex items-center space-x-2 gradient-primary text-white h-12 px-8 smooth-transition hover:scale-105 hover:shadow-glow disabled:opacity-50 disabled:hover:scale-100"
                 >
-                  <span>Next</span>
+                  <span className="font-medium">Next</span>
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               )}
@@ -531,10 +523,10 @@ export function TaxCalculatorWizard() {
               {currentStep === 3 && (
                 <Button
                   onClick={handleCalculate}
-                  className="flex items-center space-x-2 gradient-primary text-white px-8"
+                  className="flex items-center space-x-2 gradient-primary text-white h-12 px-10 smooth-transition hover:scale-105 hover:shadow-glow-lg"
                 >
-                  <Calculator className="w-4 h-4" />
-                  <span>Calculate Tax</span>
+                  <Calculator className="w-5 h-5" />
+                  <span className="font-semibold">Calculate Tax</span>
                 </Button>
               )}
 
@@ -546,9 +538,9 @@ export function TaxCalculatorWizard() {
                     setError(null);
                   }}
                   variant="outline"
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 h-12 px-6 border-2 smooth-transition hover:scale-105"
                 >
-                  <span>Start Over</span>
+                  <span className="font-medium">Start Over</span>
                 </Button>
               )}
             </div>
