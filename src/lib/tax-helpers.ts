@@ -180,20 +180,36 @@ export function calculateBdTax(
   }
 
   taxRebate = Math.min(taxRebate, grossTax); 
-  const netTaxPayable = Math.max(0, grossTax - taxRebate);
 
-
-    // Minimum-tax threshold equals the customised first-slab limit (0% rate)
+  // Minimum-tax threshold equals the customised first-slab limit (0% rate)
   const currentMinimumTaxThreshold = taxSlabsToUse[0]?.rate === 0 ? taxSlabsToUse[0].limit : 0;
 
-  let finalTaxDue = netTaxPayable;
-
-  if (taxableIncome > currentMinimumTaxThreshold && finalTaxDue > 0 && finalTaxDue < MINIMUM_TAX_AMOUNT) {
-    finalTaxDue = MINIMUM_TAX_AMOUNT;
-  } else if (taxableIncome <= currentMinimumTaxThreshold && finalTaxDue <=0 ) {
-     finalTaxDue = 0;
+  // Determine the minimum tax that must be paid
+  let minimumTaxRequired = 0;
+  if (taxableIncome > currentMinimumTaxThreshold && grossTax > 0) {
+    minimumTaxRequired = MINIMUM_TAX_AMOUNT;
   }
+
+  // Apply rebate but ensure we don't go below the minimum tax
+  let finalTaxDue = grossTax - taxRebate;
+  
+  // If there's a minimum tax requirement, ensure final tax is at least the minimum
+  if (minimumTaxRequired > 0) {
+    finalTaxDue = Math.max(finalTaxDue, minimumTaxRequired);
+  }
+  
+  // Ensure non-negative
+  finalTaxDue = Math.max(0, finalTaxDue);
+  
+  // If income is below threshold, no tax
+  if (taxableIncome <= currentMinimumTaxThreshold) {
+    finalTaxDue = 0;
+  }
+
   finalTaxDue = Math.ceil(finalTaxDue); // Final round up for the amount due
+  
+  // Calculate net tax payable (before minimum tax adjustment) for display purposes
+  const netTaxPayable = Math.max(0, grossTax - taxRebate);
 
 
   let monthlyTaxDeduction = finalTaxDue > 0 ? finalTaxDue / 12 : 0;
