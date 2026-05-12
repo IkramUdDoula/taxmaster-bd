@@ -19,14 +19,7 @@ import {
   formatCurrency,
 } from "@/lib/tax-helpers";
 import {
-  Calculator,
-  Wallet,
-  TrendingDown,
-  Calendar,
   ChevronDown,
-  PiggyBank,
-  Info,
-  BarChart3,
 } from "lucide-react";
 
 export function SinglePageTaxCalculator() {
@@ -129,8 +122,8 @@ export function SinglePageTaxCalculator() {
     if (!taxResults) return [];
 
     const currentMonthlySalary = parseFloat(monthlySalary) || 0;
-    const minMonthlySalary = Math.max(0, currentMonthlySalary / 2);
-    const maxMonthlySalary = currentMonthlySalary * 2;
+    const minMonthlySalary = Math.max(0, currentMonthlySalary - 20000);
+    const maxMonthlySalary = currentMonthlySalary + 20000;
     const monthlyInterval = 5000;
 
     // Check if user has bonuses
@@ -186,18 +179,13 @@ export function SinglePageTaxCalculator() {
       <div className="container mx-auto px-6 lg:px-12 xl:px-16 py-8 md:py-12">
         {/* Hero Section - Compact */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center shadow-md">
-              <Calculator className="w-6 h-6 text-white" />
-            </div>
-            <h1 className="text-3xl md:text-4xl font-light text-black tracking-tight">
-              Bangladesh Tax Calculator
-            </h1>
-          </div>
+          <h1 className="text-3xl md:text-4xl font-light text-black tracking-tight">
+            Bangladesh Tax Calculator
+          </h1>
         </div>
 
         {/* Four Column Layout - Always Visible */}
-        <div className="grid gap-6 lg:grid-cols-4 animate-slide-in">
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 animate-slide-in">
           {/* Left Column - Tax Year & Category */}
           <div className="space-y-6">
             <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-200">
@@ -300,16 +288,11 @@ export function SinglePageTaxCalculator() {
             {/* Investment Toggle - Inline */}
             <div className="mt-8 pt-8 border-t border-gray-200">
               <div className="flex items-center justify-between p-5 bg-gray-50 rounded-2xl smooth-transition hover:bg-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                    <PiggyBank className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <Label className="font-medium text-black cursor-pointer">Include Investments</Label>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      Get 15% tax rebate
-                    </p>
-                  </div>
+                <div>
+                  <Label className="font-medium text-black cursor-pointer">Include Investments</Label>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Get 15% tax rebate
+                  </p>
                 </div>
                 <Switch
                   checked={includeInvestments}
@@ -346,51 +329,36 @@ export function SinglePageTaxCalculator() {
           {/* Column 3 - Key Metrics & Breakdown */}
           <div className="space-y-4">
             <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-200">
-              <div className="flex items-center gap-2 mb-4">
-                <Info className="h-4 w-4 text-gray-400" />
-                <h3 className="text-sm font-medium text-black">Key Metrics</h3>
-              </div>
+              <h3 className="text-sm font-medium text-black mb-4">Key Metrics</h3>
 
               {taxResults ? (
                 <>
                   {/* Key Metrics - Compact */}
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-gray-50 rounded-2xl p-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Wallet className="h-3 w-3 text-gray-400" />
-                        <span className="text-xs text-gray-500 font-medium">Take-Home (Monthly)</span>
-                      </div>
-                      <p className="text-xl font-light text-black">
+                    <div className="bg-gray-50 rounded-2xl p-4 min-w-0">
+                      <span className="text-xs text-gray-500 font-medium block mb-1">Monthly Pay</span>
+                      <p className="text-xl font-light text-black break-all">
                         ৳{((taxResults.monthlyGrossSalary - taxResults.monthlyTaxDeduction) / 1000).toFixed(1)}k
                       </p>
                     </div>
 
-                    <div className="bg-black rounded-2xl p-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Calculator className="h-3 w-3 text-gray-400" />
-                        <span className="text-xs text-gray-400 font-medium">Tax Due (Monthly)</span>
-                      </div>
-                      <p className="text-xl font-light text-white">
+                    <div className="bg-black rounded-2xl p-4 min-w-0">
+                      <span className="text-xs text-gray-400 font-medium block mb-1">Monthly Tax</span>
+                      <p className="text-xl font-light text-white break-all">
                         ৳{(taxResults.monthlyTaxDeduction / 1000).toFixed(1)}k
                       </p>
                     </div>
 
-                    <div className="bg-gray-50 rounded-2xl p-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <TrendingDown className="h-3 w-3 text-gray-400" />
-                        <span className="text-xs text-gray-500 font-medium">Eff. Rate</span>
-                      </div>
-                      <p className="text-xl font-light text-black">
+                    <div className="bg-gray-50 rounded-2xl p-4 min-w-0">
+                      <span className="text-xs text-gray-500 font-medium block mb-1">Eff. Rate</span>
+                      <p className="text-xl font-light text-black break-all">
                         {((taxResults.finalTaxDue / taxResults.totalAnnualIncome) * 100).toFixed(1)}%
                       </p>
                     </div>
 
-                    <div className="bg-gray-50 rounded-2xl p-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Calendar className="h-3 w-3 text-gray-400" />
-                        <span className="text-xs text-gray-500 font-medium">Annual Tax</span>
-                      </div>
-                      <p className="text-xl font-light text-black">
+                    <div className="bg-gray-50 rounded-2xl p-4 min-w-0">
+                      <span className="text-xs text-gray-500 font-medium block mb-1">Annual Tax</span>
+                      <p className="text-xl font-light text-black break-all">
                         ৳{(taxResults.finalTaxDue / 1000).toFixed(1)}k
                       </p>
                     </div>
@@ -398,46 +366,46 @@ export function SinglePageTaxCalculator() {
 
                   {/* Breakdown - Always Expanded */}
                   <div className="space-y-2 pt-4 border-t border-gray-100">
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-xs text-gray-600">Annual Income</span>
-                      <span className="text-xs font-medium text-black">
+                    <div className="flex justify-between items-center py-2 gap-2">
+                      <span className="text-xs text-gray-600 flex-shrink-0">Annual Income</span>
+                      <span className="text-xs font-medium text-black text-right break-all">
                         {formatCurrency(taxResults.totalAnnualIncome)}
                       </span>
                     </div>
 
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-xs text-gray-600">Exemption</span>
-                      <span className="text-xs font-medium text-gray-400">
+                    <div className="flex justify-between items-center py-2 gap-2">
+                      <span className="text-xs text-gray-600 flex-shrink-0">Exemption</span>
+                      <span className="text-xs font-medium text-gray-400 text-right break-all">
                         -{formatCurrency(taxResults.standardExemptionApplied)}
                       </span>
                     </div>
 
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-xs text-gray-600">Taxable</span>
-                      <span className="text-xs font-medium text-black">
+                    <div className="flex justify-between items-center py-2 gap-2">
+                      <span className="text-xs text-gray-600 flex-shrink-0">Taxable</span>
+                      <span className="text-xs font-medium text-black text-right break-all">
                         {formatCurrency(taxResults.taxableIncome)}
                       </span>
                     </div>
 
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-xs text-gray-600">Gross Tax</span>
-                      <span className="text-xs font-medium text-black">
+                    <div className="flex justify-between items-center py-2 gap-2">
+                      <span className="text-xs text-gray-600 flex-shrink-0">Gross Tax</span>
+                      <span className="text-xs font-medium text-black text-right break-all">
                         {formatCurrency(taxResults.grossTax)}
                       </span>
                     </div>
 
                     {taxResults.investmentAmountConsidered > 0 && (
                       <>
-                        <div className="flex justify-between items-center py-2">
-                          <span className="text-xs text-gray-600">Investment</span>
-                          <span className="text-xs font-medium text-black">
+                        <div className="flex justify-between items-center py-2 gap-2">
+                          <span className="text-xs text-gray-600 flex-shrink-0">Investment</span>
+                          <span className="text-xs font-medium text-black text-right break-all">
                             {formatCurrency(taxResults.investmentAmountConsidered)}
                           </span>
                         </div>
 
-                        <div className="flex justify-between items-center py-2">
-                          <span className="text-xs text-gray-600">Rebate (15%)</span>
-                          <span className="text-xs font-medium text-green-600">
+                        <div className="flex justify-between items-center py-2 gap-2">
+                          <span className="text-xs text-gray-600 flex-shrink-0">Rebate (15%)</span>
+                          <span className="text-xs font-medium text-green-600 text-right break-all">
                             -{formatCurrency(taxResults.taxRebate)}
                           </span>
                         </div>
@@ -463,10 +431,7 @@ export function SinglePageTaxCalculator() {
           {/* Column 4 - Tax Slabs */}
           <div className="space-y-4">
             <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-200">
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingDown className="h-4 w-4 text-gray-400" />
-                <h3 className="text-sm font-medium text-black">Tax Slabs</h3>
-              </div>
+              <h3 className="text-sm font-medium text-black mb-4">Tax Slabs</h3>
 
               {taxResults && taxResults.taxSlabBreakdown.length > 0 ? (
                 <div className="space-y-2">
@@ -475,19 +440,19 @@ export function SinglePageTaxCalculator() {
                       key={index}
                       className="p-3 bg-gray-50 rounded-lg"
                     >
-                      <div className="flex justify-between items-start mb-1">
-                        <span className="text-xs font-medium text-black">
+                      <div className="flex justify-between items-start mb-1 gap-2">
+                        <span className="text-xs font-medium text-black flex-1 min-w-0 break-words">
                           {slab.slabDescription}
                         </span>
-                        <span className="text-xs font-semibold text-gray-600">
+                        <span className="text-xs font-semibold text-gray-600 flex-shrink-0">
                           {slab.taxRate.toFixed(0)}%
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-500">
+                      <div className="flex justify-between items-center gap-2">
+                        <span className="text-xs text-gray-500 flex-shrink-0">
                           ৳{(slab.taxableAmountInSlab / 1000).toFixed(0)}k
                         </span>
-                        <span className="text-xs font-semibold text-black">
+                        <span className="text-xs font-semibold text-black text-right break-all">
                           {formatCurrency(slab.taxOnSlab)}
                         </span>
                       </div>
@@ -509,21 +474,16 @@ export function SinglePageTaxCalculator() {
             <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
               <button
                 onClick={() => setShowComparisonTable(!showComparisonTable)}
-                className="w-full px-6 py-5 flex items-center justify-between hover:bg-gray-50 smooth-transition"
+                className="w-full px-4 md:px-6 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 smooth-transition"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                    <BarChart3 className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-lg font-medium text-black">Income Comparison Table</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      Compare tax metrics across different income levels (50% to 200% of your income)
-                    </p>
-                  </div>
+                <div className="text-left min-w-0 flex-1">
+                  <h3 className="text-base md:text-lg font-medium text-black">Income Comparison Table</h3>
+                  <p className="text-xs text-gray-500 mt-0.5 hidden sm:block">
+                    Compare tax metrics across different income levels (±৳20k from your income)
+                  </p>
                 </div>
                 <ChevronDown
-                  className={`h-5 w-5 text-gray-400 smooth-transition ${
+                  className={`h-5 w-5 text-gray-400 smooth-transition flex-shrink-0 ml-2 ${
                     showComparisonTable ? "rotate-180" : ""
                   }`}
                 />
@@ -531,54 +491,52 @@ export function SinglePageTaxCalculator() {
 
               {showComparisonTable && (
                 <div className="border-t border-gray-100 overflow-x-auto animate-fade-in">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-gray-50">
-                        <TableHead className="font-semibold text-black">Monthly Salary</TableHead>
-                        {hasBonusesInTable && (
-                          <TableHead className="font-semibold text-black">Annual Bonus</TableHead>
-                        )}
-                        <TableHead className="font-semibold text-black">Total Monthly Income</TableHead>
-                        <TableHead className="font-semibold text-black">Tax Due (Monthly)</TableHead>
-                        <TableHead className="font-semibold text-black">Take-Home (Monthly)</TableHead>
-                        <TableHead className="font-semibold text-black text-right">Effective Rate</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {comparisonData.map((row, index) => (
-                        <TableRow
-                          key={index}
-                          className={row.isCurrentIncome ? "bg-black text-white hover:bg-black" : ""}
-                        >
-                          <TableCell className={`font-medium ${row.isCurrentIncome ? "text-white" : "text-black"}`}>
-                            ৳{(row.monthlySalary / 1000).toFixed(1)}k
-                            {row.isCurrentIncome && (
-                              <span className="ml-2 text-xs bg-white text-black px-2 py-0.5 rounded-full">
-                                Your Income
-                              </span>
-                            )}
-                          </TableCell>
+                  <div className="min-w-[640px]">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-gray-50">
+                          <TableHead className="font-semibold text-black whitespace-nowrap">Monthly Salary</TableHead>
                           {hasBonusesInTable && (
-                            <TableCell className={row.isCurrentIncome ? "text-white" : "text-gray-700"}>
-                              ৳{(row.bonus / 1000).toFixed(1)}k
-                            </TableCell>
+                            <TableHead className="font-semibold text-black whitespace-nowrap">Annual Bonus</TableHead>
                           )}
-                          <TableCell className={row.isCurrentIncome ? "text-white" : "text-gray-700"}>
-                            ৳{(row.totalMonthlyIncome / 1000).toFixed(1)}k
-                          </TableCell>
-                          <TableCell className={row.isCurrentIncome ? "text-white" : "text-gray-700"}>
-                            ৳{(row.monthlyTax / 1000).toFixed(1)}k
-                          </TableCell>
-                          <TableCell className={row.isCurrentIncome ? "text-white" : "text-gray-700"}>
-                            ৳{(row.monthlyTakeHome / 1000).toFixed(1)}k
-                          </TableCell>
-                          <TableCell className={`text-right font-medium ${row.isCurrentIncome ? "text-white" : "text-black"}`}>
-                            {row.effectiveRate.toFixed(2)}%
-                          </TableCell>
+                          <TableHead className="font-semibold text-black whitespace-nowrap">Tax Due (Monthly)</TableHead>
+                          <TableHead className="font-semibold text-black whitespace-nowrap">Take-Home (Monthly)</TableHead>
+                          <TableHead className="font-semibold text-black text-right whitespace-nowrap">Effective Rate</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {comparisonData.map((row, index) => (
+                          <TableRow
+                            key={index}
+                            className={row.isCurrentIncome ? "bg-black text-white hover:bg-black" : ""}
+                          >
+                            <TableCell className={`font-medium whitespace-nowrap ${row.isCurrentIncome ? "text-white" : "text-black"}`}>
+                              ৳{(row.monthlySalary / 1000).toFixed(1)}k
+                              {row.isCurrentIncome && (
+                                <span className="ml-2 text-xs bg-white text-black px-2 py-0.5 rounded-full whitespace-nowrap">
+                                  Your Income
+                                </span>
+                              )}
+                            </TableCell>
+                            {hasBonusesInTable && (
+                              <TableCell className={`whitespace-nowrap ${row.isCurrentIncome ? "text-white" : "text-gray-700"}`}>
+                                ৳{(row.bonus / 1000).toFixed(1)}k
+                              </TableCell>
+                            )}
+                            <TableCell className={`whitespace-nowrap ${row.isCurrentIncome ? "text-white" : "text-gray-700"}`}>
+                              ৳{(row.monthlyTax / 1000).toFixed(1)}k
+                            </TableCell>
+                            <TableCell className={`whitespace-nowrap ${row.isCurrentIncome ? "text-white" : "text-gray-700"}`}>
+                              ৳{(row.monthlyTakeHome / 1000).toFixed(1)}k
+                            </TableCell>
+                            <TableCell className={`text-right font-medium whitespace-nowrap ${row.isCurrentIncome ? "text-white" : "text-black"}`}>
+                              {row.effectiveRate.toFixed(2)}%
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               )}
             </div>
@@ -587,12 +545,9 @@ export function SinglePageTaxCalculator() {
 
         {/* Footer Note - Minimal */}
         <div className="max-w-2xl mx-auto mt-12 text-center">
-          <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
-            <Info className="h-3 w-3" />
-            <p>
-              Estimates for informational purposes · Consult a tax professional · © 2025 Ikram
-            </p>
-          </div>
+          <p className="text-xs text-gray-400">
+            Estimates for informational purposes · Consult a tax professional · © {new Date().getFullYear()} Ikram
+          </p>
         </div>
       </div>
     </div>
